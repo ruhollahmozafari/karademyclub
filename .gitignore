@@ -1,0 +1,4 @@
+ven/
+__pychache__/
+*.pyc
+*sqlite
