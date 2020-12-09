@@ -9,7 +9,7 @@ from django.conf import settings
 class Category (models.Model):
     title = models.CharField(max_length= 20, )
     slug = models.SlugField(max_length=20)
-    parent = models.ForeignKey('self', on_delete= models.SET_NULL,  blank=True , null= True ,)
+    parent = models.ForeignKey('self', on_delete= models.SET_NULL,  blank=True , null= True ,)#still dont know what it is ?
 
 
     class Meta :
@@ -49,13 +49,13 @@ class ClubUser(models.Model):
 class Question(models.Model):
 
     title = models.CharField(max_length=1000,  )
-    slug = models.SlugField(unique=True,blank= True , null=True, default='')
+    slug = models.SlugField(blank= True , null=True, default='')
     user_id = models.ForeignKey(ClubUser, on_delete=models.CASCADE )
     body = models.TextField()
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
     like_number = models.IntegerField(default=0, null=True ,)
-    category = models.ManyToManyField(Category)
+    interest = models.ManyToManyField(Category)
 
     class Meta :
         pass
@@ -98,11 +98,12 @@ class Answer(models.Model):
 
 
 class Report(models.Model):
-    user_id = models.ForeignKey("ClubUser", on_delete=models.CASCADE, verbose_name='reprter', related_name= 'functioner')
-    reported_profile = models.ForeignKey("ClubUser" , null=True, on_delete=models.CASCADE, verbose_name='reported profile')
-    question_id = models.ForeignKey("Question", null = True , on_delete=models.CASCADE)
-    answer_id = models.ForeignKey(Answer, null=True , on_delete = models.CASCADE)
-    reprted_date = models.DateTimeField(auto_now_add= True , null= True)
+    pass # we still have got to this in tutorials
+    # user_id = models.ForeignKey("ClubUser", on_delete=models.CASCADE, verbose_name='reprter', related_name= 'functioner')
+    # reported_profile = models.ForeignKey("ClubUser" , null=True, on_delete=models.CASCADE, verbose_name='reported profile')
+    # question_id = models.ForeignKey("Question", null = True , on_delete=models.CASCADE)
+    # answer_id = models.ForeignKey(Answer, null=True , on_delete = models.CASCADE)
+    # reprted_date = models.DateTimeField(auto_now_add= True , null= True)
     
 
 

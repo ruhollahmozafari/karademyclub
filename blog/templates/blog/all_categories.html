@@ -1,0 +1,16 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+{% for cat  in categories %}
+<button type="button" class="btn btn-outline-primary"></button>
+
+{%endfor%}
+
+<div class ="d-flex">
+
+    <button type="button" class="btn btn-outline-primary"> <a href="{% url 'blog:questions-in-categories' cat.title %}" class="link"></a></button>
+
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,24 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<div class ="d-flex">
+    {% for question in questions %}
+        <div class="col-md-3">
+            <div class="card"
+                 style="width: 15rem; height: 15rem" >
+                <div class="card-body">
+                  <h5 class="card-title">{{ question.title }}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">{{ question.interest.all}}</h6>
+                  <p class="card-text">{{ question.body }}</p>
+                  <a href=""  class="card-link">see question</a>
+                </div>
+              </div>
+            </div>
+        <div class="card">
+
+    {%endfor%}
+</div>
+
+{% endblock %}
+
