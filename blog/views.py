@@ -11,37 +11,40 @@ def questions (request,):
     }
     return render(request, 'blog/questions.html',context)
 
-def question_detail(request, id ):#showing a question with the detail and the answers
+def question_detail(request, id,slug ):#showing a question with the detail and the answers
     question= Question.objects.get(id =id )
     answers = Answer.objects.filter(question_id = question.id)
-    # {"Question":question,"Answers":answers}
-    context = {'question': question}
-    # still dont know how to use more than one model in one html render ( got many errors)
+    context = {
+        "question": question,
+        "answers":answers
+    }
     return render(request, 'blog/question_detail.html',context )    
 
 def all_categories(request):
     categories= Category.objects.all()
     context = {
-        "Category":categories
+        "categories":categories
     }
     return render(request,'blog/all_categories.html' ,context )
 
-
-def questions_in_categories(request,title):# all the questions related to specific category(s)
-    # still could handle the multiple choices (like selecting from different categories at the same time )
-    # questions =[]
-    category = Category.objects.get(title = title)
+def questions_in_categories(request,slug):
+    category = Category.objects.get(slug = slug)
     questions = category.question_set.all()
+
     context = {
-        "Question":questions
+        "questions":questions
     }
     return render(request, 'blog/questions_in_categories.html',context)
 
 def user_profile(request, id):
     
-    result = ClubUser.objects.get(id = id )
-    return HttpResponse(result)
+    user = ClubUser.objects.get(id = id )
+    context = {
+        "user":user
+    }
+
+    return render(request, 'blog/user_profile.html', context)
 
 
 def ask(request, ):
-    return HttpResponse('ask your question here')
+    return render(request, 'blog/ask.html',)

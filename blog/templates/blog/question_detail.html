@@ -4,7 +4,7 @@
 
 <div class ="d-flex">
 
-    <div class="card" style="width: 100rem; height: 15rem">
+    <div class="card" style="width: 65rem; height: 15rem">
         <h5 class="card-header">{{question.user_id}}</h5>
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
@@ -14,18 +14,16 @@
       </div>
 </div>
 {% for answer in answers%}
-<div class ="d-flex">
 
-    <div class="card" style="width: 100rem; height: 15rem">
-        <h5 class="card-header">answers </h5>
-        <div class="card-body">
-          <h5 class="card-title">answer</h5>
-          <p class="card-text">answer body</p>
-          <a href="#" class="btn btn-primary">time</a>
-        </div>
+    <div class="card" style="width: 65rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{answer.user_id}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{answer.created_date}}</h6>
+        <p class="card-text">{{question.body}}</p>
+        <a href="#" class="card-link">{{question.total_like}}</a>
       </div>
-</div>
+    </div>
+    
 {%endfor%}
 
 {% endblock %}
-

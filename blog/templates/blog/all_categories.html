@@ -1,16 +1,8 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
-{% for cat  in categories %}
-<button type="button" class="btn btn-outline-primary"></button>
-
+{% for category  in categories %}
+        <a href="{% url 'blog:questions-in-categories' category.slug %}" role="button" class="btn btn-success btn-large">{{category.title}}</a>
 {%endfor%}
 
-<div class ="d-flex">
-
-    <button type="button" class="btn btn-outline-primary"> <a href="{% url 'blog:questions-in-categories' cat.title %}" class="link"></a></button>
-
-</div>
-
 {% endblock %}
-
