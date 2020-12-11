@@ -2,13 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
 from django.utils.text import slugify
+from clubuser.models import ClubUser
+
 # import os
 # import sys
 from django.conf import settings
 
 class Category (models.Model):
     title = models.CharField(max_length= 20, )
-    slug = models.SlugField(max_length=20)
+    slug = models.SlugField(blank= True , null=True, default='')
     parent = models.ForeignKey('self', on_delete= models.SET_NULL,  blank=True , null= True ,)#still dont know what it is ?
 
 
@@ -17,40 +19,24 @@ class Category (models.Model):
     # add verbose_names later 
     #ordering
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title, allow_unicode= True)
+        super(Category, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+
     def __str__(self):
         return self.title
     # def save(self):
         # pass
 
-class ClubUser(models.Model):
-    gender_choices={('male','آقا'),('woman','خانم')}
-
-    fname = models.CharField(max_length= 15,)
-    lname= models.CharField(max_length= 15)
-    slug= models.SlugField(null=True, blank = True)
-    email = models.CharField(max_length=40 ,unique= True)
-    gender = models.CharField(null=True, max_length = 10 , choices = gender_choices , )
-    sign_up_date= models.DateTimeField(auto_now_add= True, null=True)
-    is_active = models.BooleanField(default= True, )
-    profile_image = models.ImageField( null=True ,default = '01.png', blank = True)
-    interest = models.ManyToManyField(Category ,)
-    # reporting_post = models.ForeignKey(Questions)
-    
-    class Meta :
-        pass
-
-    def __str__(self):
-        return f'{self.fname} {self.lname}'
-
-    # def save(self):
-        # pass
 
 
 class Question(models.Model):
 
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
-    user_id = models.ForeignKey(ClubUser, on_delete=models.CASCADE )
+    user_id = models.ForeignKey("clubuser.ClubUser", on_delete=models.CASCADE )
     body = models.TextField()
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
@@ -76,7 +62,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
     question_id = models.ForeignKey("Question", on_delete=models.CASCADE)
-    user_id = models.ForeignKey(ClubUser ,  on_delete=models.CASCADE)
+    user_id = models.ForeignKey("clubuser.ClubUser" ,  on_delete=models.CASCADE)
     body = body = models.TextField()
     published = models.BooleanField(default=True, )
     total_like= models.IntegerField(default= 0, null=True)

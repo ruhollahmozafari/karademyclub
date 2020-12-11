@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from blog.models import ClubUser, Category, Question, Answer , Report, Like
+from blog.models import  Category, Question, Answer , Report, Like
 
 def home_page(request,):
     return render(request , 'blog/home_page.html')
+
 def questions (request,):
     questions = Question.objects.all()
     context = {
@@ -35,16 +36,6 @@ def questions_in_categories(request,slug):
         "questions":questions
     }
     return render(request, 'blog/questions_in_categories.html',context)
-
-def user_profile(request, id):
-    
-    user = ClubUser.objects.get(id = id )
-    context = {
-        "user":user
-    }
-
-    return render(request, 'blog/user_profile.html', context)
-
 
 def ask(request, ):
     return render(request, 'blog/ask.html',)

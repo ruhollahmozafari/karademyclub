@@ -8,7 +8,6 @@ urlpatterns = [
     path('questions/<int:id>/<str:slug>/',blog_views.question_detail, name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',blog_views.questions_in_categories, name = 'questions-in-categories'),
     path('all-categories/', blog_views.all_categories , name= 'all-categories'), # it is not neccesary because it will be shown on the left or right side of the webpage
-    path('user-profile/<int:id>/',blog_views.user_profile, name = 'user-profile'),
     path('ask/',blog_views.ask, name = 'ask'),
 
 ]     

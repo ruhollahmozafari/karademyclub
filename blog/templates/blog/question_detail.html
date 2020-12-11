@@ -13,14 +13,15 @@
         </div>
       </div>
 </div>
+
 {% for answer in answers%}
 
     <div class="card" style="width: 65rem;">
       <div class="card-body">
         <h5 class="card-title">{{answer.user_id}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{answer.created_date}}</h6>
-        <p class="card-text">{{question.body}}</p>
-        <a href="#" class="card-link">{{question.total_like}}</a>
+        <p class="card-text">{{answer.body}}</p>
+        <a href="#" class="card-link">{{answer.total_like}}</a>
       </div>
     </div>
     
