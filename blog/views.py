@@ -6,7 +6,7 @@ def home_page(request,):
     return render(request , 'blog/home_page.html')
 
 def questions (request,):
-    questions = Question.objects.all()
+    questions = list(Question.objects.all())
     context = {
         'questions':questions
     }
@@ -15,9 +15,11 @@ def questions (request,):
 def question_detail(request, id,slug ):#showing a question with the detail and the answers
     question= Question.objects.get(id =id )
     answers = Answer.objects.filter(question_id = question.id)
+    cats = list(question.interest.all())
     context = {
         "question": question,
-        "answers":answers
+        "answers":answers,
+        "cats":cats,
     }
     return render(request, 'blog/question_detail.html',context )    
 

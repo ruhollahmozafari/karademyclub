@@ -4,17 +4,19 @@
 
 <div class ="d-flex">
 
-    <div class="card" style="width: 65rem; height: 15rem">
+    <div class="card" style="width: 100rem; height: 15rem">
         <h5 class="card-header">{{question.user_id}}</h5>
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{question.body}}</p>
-          <a href="#" class="btn btn-primary">Go to category</a>
         </div>
       </div>
 </div>
+{% for cat in cats%}
+<a href="url: 'blog/ques-in-categories' cat.slug" class="btn btn-outline-primary" role="button" aria-pressed="true">{{cat}}</a>
+{%endfor%}
 
-{% for answer in answers%}
+  {% for answer in answers%}
 
     <div class="card" style="width: 65rem;">
       <div class="card-body">
