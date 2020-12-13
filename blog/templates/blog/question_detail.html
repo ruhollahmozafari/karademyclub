@@ -13,11 +13,10 @@
       </div>
 </div>
 {% for cat in cats%}
-<a href="url: 'blog/ques-in-categories' cat.slug" class="btn btn-outline-primary" role="button" aria-pressed="true">{{cat}}</a>
+<a href="url: 'blog/questions-in-categories' cat.title" class="btn btn-outline-primary" role="button" aria-pressed="true">{{cat}}</a>
 {%endfor%}
 
   {% for answer in answers%}
-
     <div class="card" style="width: 65rem;">
       <div class="card-body">
         <h5 class="card-title">{{answer.user_id}}</h5>

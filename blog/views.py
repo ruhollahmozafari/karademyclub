@@ -1,6 +1,7 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from blog.models import  Category, Question, Answer , Report, Like
+from django.shortcuts import render , get_object_or_404
+from django.http import HttpResponse , HttpResponseRedirect
+from blog.models import  *
+from .forms import Ask
 
 def home_page(request,):
     return render(request , 'blog/home_page.html')
@@ -13,7 +14,7 @@ def questions (request,):
     return render(request, 'blog/questions.html',context)
 
 def question_detail(request, id,slug ):#showing a question with the detail and the answers
-    question= Question.objects.get(id =id )
+    question= get_object_or_404(Question, id = id)
     answers = Answer.objects.filter(question_id = question.id)
     cats = list(question.interest.all())
     context = {
@@ -40,4 +41,12 @@ def questions_in_categories(request,slug):
     return render(request, 'blog/questions_in_categories.html',context)
 
 def ask(request, ):
-    return render(request, 'blog/ask.html',)
+    if request.method == 'POST':
+        question_form = Ask(request.POST)
+        if question_form.is_valid():
+            question_form.save()
+            return HttpResponseRedirect('blog:questions')
+    else:
+        question_form = Ask()
+        context = {'question_form': question_form}
+    return render(request, 'blog/ask.html',context)

@@ -5,12 +5,14 @@
 <div class ="d-flex">
     {% for question in questions %}
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card"
-                 style="width: 15rem; height: 15rem" >
+                 style="width: 65rem; height: 15rem" >
                 <div class="card-body">
                   <h5 class="card-title">{{ question.title }}</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">{{question.interest.all}}</h6>
+                  {%for cat in question.interest.all%}
+                  <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
+                  {%endfor%}
                   <p class="card-text">{{ question.body }}</p>
                   <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
                 </div>

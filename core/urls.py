@@ -8,5 +8,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('blog.urls', namespace='blog')),
     path('user_profile',include('clubuser.urls',namespace='clubuser')),
+    path('djrichtextfield/', include('djrichtextfield.urls')), # this is for rich text package
     
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
