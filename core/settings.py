@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'clubuser',
     'ckeditor',
+    'crispy_forms',
 
 
 ]
@@ -137,3 +138,4 @@ MEDIA_URL = '/images/'
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/images')
+CRISPY_TEMPLATE_PACK ="bootstrap4"

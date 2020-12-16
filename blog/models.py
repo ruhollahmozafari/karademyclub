@@ -47,7 +47,7 @@ class Question(models.Model):
     ) 
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
-    user_id = models.ForeignKey("clubuser.ClubUser", on_delete=models.CASCADE )
+    user_id = models.ForeignKey("clubuser.ClubUser",default= None, on_delete=models.CASCADE )
     body = RichTextField(blank= True , null=True)
     status = models.CharField(max_length=15, choices=PUBLISH_STATUS, default='publish')
     created_date = models.DateTimeField(auto_now_add= True,null = True)
@@ -74,7 +74,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE)
-    user_id = models.ForeignKey("clubuser.ClubUser" ,  on_delete=models.CASCADE)
+    user_id = models.ForeignKey("clubuser.ClubUser" ,default= None , on_delete=models.CASCADE)
     body = body = models.TextField()
     published = models.BooleanField(default=True, )
     total_like= models.IntegerField(default= 0, null=True)
