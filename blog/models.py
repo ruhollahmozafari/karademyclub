@@ -3,7 +3,11 @@ from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
 from django.utils.text import slugify
 from clubuser.models import ClubUser
-from djrichtextfield.models import RichTextField
+from django.urls import reverse
+from ckeditor.fields import RichTextField
+from django.urls import reverse
+
+
 
 # import os
 # import sys
@@ -34,7 +38,7 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.title
-
+    
     
 class Question(models.Model):
     PUBLISH_STATUS = (
@@ -44,13 +48,13 @@ class Question(models.Model):
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
     user_id = models.ForeignKey("clubuser.ClubUser", on_delete=models.CASCADE )
-    body = RichTextField()
-    status = models.CharField(max_length=15, choices=PUBLISH_STATUS, default='draft')
+    body = RichTextField(blank= True , null=True)
+    status = models.CharField(max_length=15, choices=PUBLISH_STATUS, default='publish')
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
     like_number = models.IntegerField(default=0, null=True ,)
-    interest = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
-    tag = models.ManyToManyField(Tag)
+    category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
+    tag = models.ManyToManyField(Tag, blank= True)
 
     class Meta :
         pass
@@ -61,9 +65,6 @@ class Question(models.Model):
         self.slug = slugify(self.title, allow_unicode= True)
         super(Question, self).save(*args, **kwargs)
         super().save(*args, **kwargs)
-
-    def snippet(self):# to only show a small part of the question in the quesitons page not all of it if the quesion is too long
-        return self.body[:100] + '...' 
 
     def __str__(self):
         return self.title

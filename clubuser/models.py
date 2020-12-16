@@ -12,7 +12,7 @@ class ClubUser(models.Model):
     fname = models.CharField(max_length= 15,)
     lname= models.CharField(max_length= 15)
     slug= models.SlugField(null=True, blank = True)
-    email = models.CharField(max_length=40 ,unique= True)
+    email = models.EmailField(max_length=100,unique= True)
     gender = models.CharField(null=True, max_length = 10 , choices = gender_choices , )
     sign_up_date= models.DateTimeField(auto_now_add= True, null=True)
     is_active = models.BooleanField(default= True, )

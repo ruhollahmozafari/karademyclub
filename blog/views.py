@@ -1,6 +1,8 @@
-from django.shortcuts import render , get_object_or_404
+from django.shortcuts import redirect, render , get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse , HttpResponseRedirect
-from blog.models import  *
+from blog.models import  Answer, Tag , Category, Question
 from .forms import Ask
 
 def home_page(request,):
@@ -16,11 +18,11 @@ def questions (request,):
 def question_detail(request, id,slug ):#showing a question with the detail and the answers
     question= get_object_or_404(Question, id = id)
     answers = Answer.objects.filter(question_id = question.id)
-    cats = list(question.interest.all())
+    tags = list(question.tag.all())
     context = {
         "question": question,
         "answers":answers,
-        "cats":cats,
+        "tags":tags,
     }
     return render(request, 'blog/question_detail.html',context )    
 
@@ -45,7 +47,7 @@ def ask(request, ):
         question_form = Ask(request.POST)
         if question_form.is_valid():
             question_form.save()
-            return HttpResponseRedirect('blog:questions')
+            return  redirect("")
     else:
         question_form = Ask()
         context = {'question_form': question_form}

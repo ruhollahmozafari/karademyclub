@@ -1,4 +1,5 @@
 from django.urls import path
+from django.urls import reverse
 from . import views as blog_views
 app_name='blog'  
 
@@ -11,4 +12,4 @@ urlpatterns = [
     path('ask/',blog_views.ask, name = 'ask'),
     
 
-]  
+]

@@ -3,12 +3,11 @@
 {% block content %}
 
 <div class ="d-flex">
-
     <div class="card" style="width: 100rem; height: 15rem">
         <h5 class="card-header">{{question.user_id}}</h5>
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
-          <p class="card-text">{{question.body}}</p>
+          <p class="card-text">{{ question.body|safe }}</p>
         </div>
       </div>
 </div>
@@ -21,7 +20,7 @@
       <div class="card-body">
         <h5 class="card-title">{{answer.user_id}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{answer.created_date}}</h6>
-        <p class="card-text">{{answer.body}}</p>
+        <p class="card-text">{{answer.body|safe}}</p>
         <a href="#" class="card-link">{{answer.total_like}}</a>
       </div>
     </div>

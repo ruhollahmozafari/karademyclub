@@ -3,6 +3,7 @@
 {% block content %}
     <form method='POST'>
     {% csrf_token %}
+    {{question_form.media}}
       {{question_form.as_p}}    
         <input type="submit" value="Post">
     </form>
