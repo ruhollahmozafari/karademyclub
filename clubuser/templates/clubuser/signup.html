@@ -2,7 +2,7 @@
 
 {% block content %}
 {% load crispy_forms_tags %}
-
+<!-- more detail for front will be added in cloze future -->
 <form method="POST">
 	{% csrf_token %}
 	{{ signup_form|crispy  }}
@@ -10,3 +10,4 @@
 </form>
 
 {% endblock %}
+

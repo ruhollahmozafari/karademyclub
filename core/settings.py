@@ -134,8 +134,8 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/images/'
 
-
-
+TEMPLATE_DIRS =  '/Users/user/Documents/Python/virtual/src/static/templates',
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/images')
+
 CRISPY_TEMPLATE_PACK ="bootstrap4"

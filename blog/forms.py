@@ -5,5 +5,9 @@ from .models import Question
 class Ask(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ('title', 'body', 'category','tag','user_id')
-        
+        fields = ('title', 'body', 'category','tag')
+
+
+
+
+            

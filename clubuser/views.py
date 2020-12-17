@@ -1,11 +1,12 @@
 from django.shortcuts import render , redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate 
+from django.contrib import auth
+from django.contrib.auth.forms import  AuthenticationForm
 from django.http import HttpResponse
 from clubuser.models import ClubUser
 from blog.models import  Category, Question, Answer , Report, Like
 from .forms import *
 from blog import urls
-
 
 
 def user_profile(request, id):
@@ -17,6 +18,7 @@ def user_profile(request, id):
     return render(request, 'clubuser/user_profile.html', context)
 
 def user_creation(request):
+
     if request.method == 'POST':
         signup_form = SignUpForm(request.POST,)
         if signup_form.is_valid():
@@ -35,3 +37,20 @@ def user_creation(request):
         signup_form = SignUpForm()
 
     return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
+
+def login(request):
+    if request.method == 'POST':
+        user = auth.authenticate(username=request.POST['username'],password = request.POST['password'])
+        if user is not None:
+            auth.login(request,user)
+            return redirect('/')
+        else:
+            return render (request,'registration/login.html/', {'error':'Username or password is incorrect!'})
+    else:
+        return render(request,'registration/login.html/')
+
+def logout(request):
+    if request.method == 'POST':
+        auth.logout(request)
+    return render(request, 'registration/logout.html')
+    
