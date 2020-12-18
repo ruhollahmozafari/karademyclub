@@ -47,7 +47,7 @@ class Question(models.Model):
     ) 
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
-    user_id = models.ForeignKey("clubuser.ClubUser",default= None, on_delete=models.CASCADE )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     body = RichTextField(blank= True , null=True)
     status = models.CharField(max_length=15, choices=PUBLISH_STATUS, default='publish')
     created_date = models.DateTimeField(auto_now_add= True,null = True)
@@ -104,19 +104,3 @@ class Report(models.Model):
 
 class Like(models.Model):
     pass
-#     question_id = models.ForeignKey("Question",null=True, on_delete=models.CASCADE)
-#     answer_id = models.ForeignKey(Answer,null =True, on_delete=models.CASCADE)
-#     user_id = models.ForeignKey(ClubUser ,  on_delete=models.CASCADE)
-    
-#     class Meta:
-#         unique_together= [['ClubUser', 'Question '], ['ClubUser', 'Answer']]
-    
-#     def __str__(self):
-#         if self.answer_id:
-#             return f'{self.user_id} {self.answer_id}'
-#         else:
-#             return f'{self.user_id} {self.question_id}'
-            
-
-        
-    

@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from django.contrib.auth import login, authenticate 
+from django.contrib.auth import authenticate 
 from django.contrib import auth
 from django.contrib.auth.forms import  AuthenticationForm
 from django.http import HttpResponse
@@ -31,7 +31,7 @@ def user_creation(request):
             raw_password = signup_form.cleaned_data.get('password1')
             new_user = authenticate(username=new_user.username, password=raw_password)
             ClubUser.objects.create(user= new_user)
-            return redirect("/",) # set this to the profile later
+            return redirect('clubuser:login') # set this to the profile later
 
     else:
         signup_form = SignUpForm()
@@ -53,4 +53,4 @@ def logout(request):
     if request.method == 'POST':
         auth.logout(request)
     return render(request, 'registration/logout.html')
-    
+

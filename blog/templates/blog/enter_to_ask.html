@@ -1,0 +1,45 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+
+{% if error %}
+{{ error }}
+
+<br/>
+<br/>
+{% endif %}
+
+<h1>you have not logged in please <a href="{% url 'clubuser:login' %}" class="lonk">log in here </a> <a href="{% url 'clubuser:signup' %}" class="link"> signup here</a></h1>
+
+{% endblock %}
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+
+{% if error %}
+{{ error }}
+
+<br/>
+<br/>
+{% endif %}
+
+<h1>Login!</h1>
+
+<form method = "POST" action=>
+    {% csrf_token %}
+    username:
+    <br/>
+    <input type="text" name="username" />
+    <br/>
+    Password:
+    <br/>
+    <input type="password" name="password" />
+    <br/>
+    <input class ="btn btn-primary" type="submit" value= "Login" />
+    <br/>
+</form>
+
+
+{% endblock %}

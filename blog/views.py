@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse , HttpResponseRedirect
 from blog.models import  Answer, Tag , Category, Question
+from django.contrib import messages 
+from django.contrib.auth import decorators
 from .forms import Ask
 
 def home_page(request,):
@@ -42,14 +44,26 @@ def questions_in_categories(request,slug):
     }
     return render(request, 'blog/questions_in_categories.html',context)
 
-@login_required()
-def ask(request, ):
-    if request.method == 'POST':
-        question_form = Ask(request.POST)
-        if question_form.is_valid():
-            question_form.save()
-            return  redirect("/")
+def ask(request):
+    if request.user.is_anonymous:
+        return render(request,'blog/enter_to_ask.html',)
     else:
-        question_form = Ask()
-        context = {'question_form': question_form}
-    return render(request, 'blog/ask.html',context)
+        return ask_verified(request)
+
+@login_required()
+def ask_verified(request, ):
+    form = Ask()
+    if request.method == 'POST':
+        form = Ask(request.POST)
+        if form.is_valid():
+            question = form.save()
+            question.user = request.user
+            question.save()
+            form= Ask()
+            messages.success(request, "Question succesfully created, wait for your answer ")
+    else:
+        form = Ask()
+    return render(request, 'blog/ask.html',{'form': form})
+
+def enter_to_ask(request):
+    return render(request, 'blog/enter_to_ask.html',)

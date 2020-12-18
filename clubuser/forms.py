@@ -9,6 +9,6 @@ from .models import ClubUser
 class SignUpForm(UserCreationForm):# try it by inheriting from UserCreationForm and see what will happen use this link : https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
     class Meta:
         model = User
-        fields = ['username','first_name','last_name', 'email','password1', 'password2']
+        fields = ['username','first_name','last_name', 'email','password1', 'password2',]
 
     
