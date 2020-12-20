@@ -10,11 +10,12 @@ class ClubUser(models.Model):
     profile_image = models.ImageField( null=True ,default = '01.png', blank = True)
     interest = models.ManyToManyField("blog.Category" ,blank= True)
     
-    def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
+    def __str__(self): 
+            return str(self.user.get_username)
+
     
     class Meta :
         pass
     # def save(self):
         # pass
-    
+        

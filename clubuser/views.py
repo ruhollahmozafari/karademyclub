@@ -9,28 +9,33 @@ from .forms import *
 from blog import urls
 
 
-def user_profile(request, id):
-    
-    user = ClubUser.objects.get(id = id )
+def profile(request, id):
+    # you can use this method by having 'user.clubuser.id' in the tample base.html or you can chage the user.clubuser.id to user.id and uncooment the two following lines here
+    user1 = User.objects.get(id = id)
+    main_id = user1.clubuser.id
+    profile = ClubUser.objects.get(id = main_id)
+    # profile = request.user.get_profile()
+    # user = profile
     context = {
-        "user":user
+        "profile":profile
     }
     return render(request, 'clubuser/user_profile.html', context)
 
 def user_creation(request):
-
     if request.method == 'POST':
         signup_form = SignUpForm(request.POST,)
         if signup_form.is_valid():
             new_user = signup_form.save()
             new_user.refresh_from_db()
             new_user.interest = signup_form.cleaned_data.get('interest')
+            new_user.profile_image  = signup_form.cleaned_data.get('image')
             new_user.save()
             # new_user.set_password(signup_form.cleaned_data["password"])
             new_user.save()
             raw_password = signup_form.cleaned_data.get('password1')
             new_user = authenticate(username=new_user.username, password=raw_password)
-            ClubUser.objects.create(user= new_user)
+            new1 = ClubUser(user = new_user )
+            new1.save()
             return redirect('clubuser:login') # set this to the profile later
 
     else:
@@ -53,4 +58,3 @@ def logout(request):
     if request.method == 'POST':
         auth.logout(request)
     return render(request, 'registration/logout.html')
-

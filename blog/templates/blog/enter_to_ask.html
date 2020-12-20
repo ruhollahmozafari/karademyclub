@@ -2,6 +2,7 @@
 
 {% block content %}
 
+{% load crispy_forms_tags %}
 
 {% if error %}
 {{ error }}
@@ -9,13 +10,6 @@
 <br/>
 <br/>
 {% endif %}
-
-<h1>you have not logged in please <a href="{% url 'clubuser:login' %}" class="lonk">log in here </a> <a href="{% url 'clubuser:signup' %}" class="link"> signup here</a></h1>
-
-{% endblock %}
-{% extends 'layouts/base.html' %}
-
-{% block content %}
 
 
 {% if error %}
@@ -27,7 +21,7 @@
 
 <h1>Login!</h1>
 
-<form method = "POST" action=>
+<form method = "POST" action="{% url 'clubuser:login' %}" >
     {% csrf_token %}
     username:
     <br/>
@@ -41,5 +35,6 @@
     <br/>
 </form>
 
+<h1></a> or if you dont have acount yet <a href="{% url 'clubuser:signup' %}" class="link"> signup here</a></h1>
 
 {% endblock %}

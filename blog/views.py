@@ -6,6 +6,7 @@ from blog.models import  Answer, Tag , Category, Question
 from django.contrib import messages 
 from django.contrib.auth import decorators
 from .forms import Ask
+from clubuser.forms import *
 
 def home_page(request,):
     return render(request , 'blog/home_page.html')
@@ -46,6 +47,7 @@ def questions_in_categories(request,slug):
 
 def ask(request):
     if request.user.is_anonymous:
+        
         return render(request,'blog/enter_to_ask.html',)
     else:
         return ask_verified(request)
@@ -67,3 +69,5 @@ def ask_verified(request, ):
 
 def enter_to_ask(request):
     return render(request, 'blog/enter_to_ask.html',)
+
+
