@@ -21,7 +21,6 @@ def profile(request, id):
         "profile":profile
     }
     return render(request, 'clubuser/user_profile.html', context)
-
 def user_creation(request):
     if request.method == 'POST':
         signup_form = SignUpForm(request.POST,)

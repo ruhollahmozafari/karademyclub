@@ -9,7 +9,9 @@
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
         </div>
-      </div>
+        <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-large">edit the question</a>
+      <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a>
+    </div>
 </div>
 {% for cat in cats%}
 <a href="url: 'blog/questions-in-categories' cat.title" class="btn btn-outline-primary" role="button" aria-pressed="true">{{cat}}</a>

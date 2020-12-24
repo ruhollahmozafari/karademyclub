@@ -6,18 +6,18 @@ from clubuser.models import ClubUser
 from django.urls import reverse
 from ckeditor.fields import RichTextField
 from django.urls import reverse
-
-
-
-# import os
-# import sys
 from django.conf import settings
+
+
+
 
 class Category (models.Model):
     title = models.CharField(max_length= 20, )
     slug = models.SlugField(blank= True , null=True, default='')
     parent = models.ForeignKey('self', on_delete= models.SET_NULL,  blank=True , null= True ,)#still dont know what it is ?
 
+    class Meta:
+        pass
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title, allow_unicode= True)
         super(Category, self).save(*args, **kwargs)
@@ -70,6 +70,7 @@ class Question(models.Model):
         return self.title
     # def save(self):
         # pass
+
 
 
 class Answer(models.Model):
