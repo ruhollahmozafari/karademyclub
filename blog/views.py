@@ -5,14 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse , HttpResponseRedirect
 from blog.models import  Answer, Tag , Category, Question
 from django.contrib import messages 
+from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
 from .forms import Ask
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
-
-
-
 
 
 
@@ -45,47 +43,14 @@ class QuestionsInCategories(ListView,):
         return context
 
 
-# @method_decorator(login_required, name = 'dispatch')
+@method_decorator(login_required, name = 'dispatch')
 class QuestionCreate(CreateView):
-    pass
-    # def get(self):
+    def get(self, request ):
+        form = Ask()
+        form = Ask()
+        return render(request, 'blog/ask.html',{'form': form})
 
-
-
-class QuestionUpdate(UpdateView):#need to check the user log in and writer match
-
-    model = Question
-    fields = ['title', 'body', 'category']
-    template_name = 'blog/update_question.html'
-    success_url= reverse_lazy('blog:questions')
-
-class QuestionDelete(DeleteView):
-    model = Question
-    template_name = 'blog/delete-question.html'
-    success_url = reverse_lazy('blog:questions')
-
-
-
-
-
-
-
-def ask(request):# this is gonna be a pop up rather than a single page
-    if request.user.is_anonymous:
-        
-        return render(request,'blog/enter_to_ask.html',)
-    else:
-        return ask_verified(request)
-
-
-
-
-
-
-@login_required()
-def ask_verified(request, ):
-    form = Ask()
-    if request.method == 'POST':
+    def post(self, request):
         form = Ask(request.POST)
         if form.is_valid():
             question = form.save()
@@ -93,9 +58,55 @@ def ask_verified(request, ):
             question.save()
             form= Ask()
             messages.success(request, "Question succesfully created, wait for your answer ")
-    else:
-        form = Ask()
-    return render(request, 'blog/ask.html',{'form': form})
+        return HttpResponse('you made a question !!!')
+    
+@method_decorator(login_required, name = 'dispatch')
+class QuestionUpdate(UpdateView):#need to check the user log in and writer match
+        model = Question
+        fields = ['title', 'body', 'category']
+        template_name = 'blog/update_question.html'
+        success_url= reverse_lazy('blog:questions')
+
+
+@method_decorator(login_required, name = 'dispatch')
+class QuestionDelete(DeleteView):
+
+    def post(self,request):
+        
+        if request.user == question.user:
+            template_name = 'blog/delete-question.html'
+            success_url = reverse_lazy('blog:questions')
+    
+
+
+
+# from this line on are the the funciotns which was created at first then the whole view was turned to CBV
+# kept it for the sake of learning
+
+
+# def ask(request):# this is gonna be a pop up rather than a single page
+#     if request.user.is_anonymous:
+        
+#         return render(request,'blog/enter_to_ask.html',)
+#     else:
+#         return ask_verified(request)
+
+
+# @login_required()
+# def ask_verified(request, ):
+#     form = Ask()
+#     if request.method == 'POST':
+#         form = Ask(request.POST)
+#         if form.is_valid():
+#             question = form.save()
+#             question.user = request.user
+#             question.save()
+#             form= Ask()
+#             messages.success(request, "Question succesfully created, wait for your answer ")
+#     else:
+#         form = Ask()
+#     return render(request, 'blog/ask.html',{'form': form})
+
 
 # #///////////////////home///////////////
 # class Home(View):
@@ -127,9 +138,6 @@ def ask_verified(request, ):
 #/////////////////QuestionList//////////////////////////////////
 
 #///////////////////QuestionDetial/////////////////////////////
-
-
-
 
 
 # def all_categories(request):

@@ -9,8 +9,11 @@
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
         </div>
+        {% if user == question.user %}
         <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-large">edit the question</a>
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a>
+
+      {% endif %}
     </div>
 </div>
 {% for cat in cats%}

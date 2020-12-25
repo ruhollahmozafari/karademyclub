@@ -6,6 +6,7 @@ from django.contrib.auth.forms import  AuthenticationForm
 from django.http import HttpResponse
 from clubuser.models import ClubUser
 from blog.models import  Category, Question, Answer , Report, Like
+from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from .forms import *
 from blog import urls
 
@@ -21,8 +22,9 @@ def profile(request, id):
         "profile":profile
     }
     return render(request, 'clubuser/user_profile.html', context)
-def user_creation(request):
-    if request.method == 'POST':
+
+class UserCreation(CreateView):
+    def post(self, request):
         signup_form = SignUpForm(request.POST,)
         if signup_form.is_valid():
             new_user = signup_form.save()
@@ -30,21 +32,21 @@ def user_creation(request):
             # new_user.interest = signup_form.cleaned_data.get('interest')
             # new_user.profile_image  = signup_form.cleaned_data.get('image')
             # new_user.set_password(signup_form.cleaned_data["password"])
+            # new_user.club_user.profile_image = signup_form.cleaned_data.get('image')
             interest1 = signup_form.cleaned_data.get('interest')
-            new_user.user_clubuser.profile_image = signup_form.cleaned_data.get('image')
             new_user.save()
             raw_password = signup_form.cleaned_data.get('password1')
             new_user = authenticate(username=new_user.username, password=raw_password)
             new1 = ClubUser.objects.create(user = new_user,)
             new1.interest.add(interest1)
-            new_user.user_clubuser.profile_image = signup_form.cleaned_data.get('image')
+            # new_user.user_clubuser.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
             new1.save()
-            return redirect('clubuser:login') # set this to the profile later
+        return redirect('clubuser:login') 
 
-    else:
+    def get(self, request):
         signup_form = SignUpForm()
+        return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
 
-    return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
 
 def login(request):
     if request.method == 'POST':
@@ -56,6 +58,7 @@ def login(request):
             return render (request,'registration/login.html/', {'error':'Username or password is incorrect!'})
     else:
         return render(request,'registration/login.html/')
+
 
 def logout(request):
     if request.method == 'POST':

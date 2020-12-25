@@ -2,7 +2,7 @@ from django.urls import path
 from django.urls import reverse
 from .models import *
 from . import views as blog_views
-from blog.views import QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete
+from blog.views import QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete, QuestionCreate
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic import TemplateView
 from . import api_views
@@ -14,7 +14,7 @@ urlpatterns = [
     path('questions/<int:id>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',QuestionsInCategories.as_view(), name = 'questions-in-categories'),
     path('all-categories/', AllCategories.as_view() , name= 'all-categories'), # it is not neccesary because it will be shown on the left or right side of the webpage
-    path('ask/',blog_views.ask, name = 'ask'),
+    path('ask/',QuestionCreate.as_view(), name = 'ask'),
     path('update-question/<int:pk>/', QuestionUpdate.as_view(),name = 'update-question'),
     path('delete-question/<int:pk>/', QuestionDelete.as_view(), name = 'delete-question'),
     path('api/categories/',api_views.category_list),
