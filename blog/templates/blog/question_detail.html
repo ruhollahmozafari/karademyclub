@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% load hitcount_tags %}
 
 {% block content %}
 
@@ -9,14 +10,16 @@
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
           <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary" role="button" aria-pressed="true">{{question.category}}</a>
-
+          <p  role="button" class="btn btn-success btn-large">Views: {% get_hit_count for question %} </p>
         </div>
         {% if user == question.user %}
         <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-large">edit the question</a>
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a>
 
       {% endif %}
+      
     </div>
+
 </div>
 
   {% for answer in answers%}

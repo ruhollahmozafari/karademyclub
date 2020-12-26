@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% load hitcount_tags %}
 
 {% block content %}
 
@@ -14,6 +15,8 @@
                   <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
                   <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
                   <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
+                  <p >  Views: {% get_hit_count for question%} </p>
+                  
                 </div>
               </div>
             </div>

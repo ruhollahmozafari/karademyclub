@@ -11,14 +11,30 @@ from .forms import Ask
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
+from hitcount.views import HitCountDetailView
 
 
 
-class QuestionDetail(DetailView):# we can use method 1 or 2
+class QuestionDetail(HitCountDetailView):# we can use method 1 or 2
     #method 1
     template_name = 'blog/question_detail.html'
     model = Question
     context_object_name = 'question'
+    count_hit = True
+    
+#this is not a good approach to do it so the hitcounter was used
+    # def get_object(self):# getting the question to show while adding one to the views 
+    #     object = super(QuestionDetail, self).get_object()
+    #     object.views +=1
+    #     object.save()
+    #     return object
+    
+    def get_context_data(self, **kwargs):# fetching the answers of the same question
+        context = super(QuestionDetail,self).get_context_data(**kwargs)
+        context["answers"]= Answer.objects.filter(question_id= self.kwargs['pk'])
+        return context
+    
+    
 
 
 class AllCategories(ListView):

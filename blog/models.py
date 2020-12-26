@@ -7,7 +7,9 @@ from django.urls import reverse
 from ckeditor.fields import RichTextField
 from django.urls import reverse
 from django.conf import settings
-
+from hitcount.models import HitCountMixin, HitCount
+from django.contrib.contenttypes.fields import GenericRelation
+from six import python_2_unicode_compatible
 
 
 
@@ -39,7 +41,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.title
 
-        
+@python_2_unicode_compatible
 class Question(models.Model):
     PUBLISH_STATUS = (
     ('draft', 'draft'),
@@ -55,6 +57,7 @@ class Question(models.Model):
     like_number = models.IntegerField(default=0, null=True ,)
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
     tag = models.ManyToManyField(Tag, blank= True)
+    hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
 
     class Meta :
         pass

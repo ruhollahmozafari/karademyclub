@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'clubuser',
     'ckeditor',
     'crispy_forms',
+    'hitcount',
 
 
 ]
