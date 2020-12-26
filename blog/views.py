@@ -19,7 +19,6 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
     template_name = 'blog/question_detail.html'
     model = Question
     context_object_name = 'question'
-    queryset = Question.objects.all()
 
 
 class AllCategories(ListView):
@@ -58,7 +57,7 @@ class QuestionCreate(CreateView):
             question.save()
             form= Ask()
             messages.success(request, "Question succesfully created, wait for your answer ")
-        return HttpResponse('you made a question !!!')
+        return HttpResponseRedirect(reverse_lazy('blog:questions'))
     
 @method_decorator(login_required, name = 'dispatch')
 class QuestionUpdate(UpdateView):#need to check the user log in and writer match

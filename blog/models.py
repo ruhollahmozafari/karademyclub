@@ -38,8 +38,8 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.title
-    
-    
+
+        
 class Question(models.Model):
     PUBLISH_STATUS = (
     ('draft', 'draft'),

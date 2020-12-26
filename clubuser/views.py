@@ -1,5 +1,6 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth import authenticate 
+from django.urls import reverse ,reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.forms import  AuthenticationForm
@@ -41,12 +42,30 @@ class UserCreation(CreateView):
             new1.interest.add(interest1)
             # new_user.user_clubuser.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
             new1.save()
+            # if user is not None: add these later to go to another page
+            #     login(request, user)
         return redirect('clubuser:login') 
 
     def get(self, request):
         signup_form = SignUpForm()
         return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
 
+class UserUpdate(UpdateView):
+    template_name = 'clubuser/update-profile.html'
+    model = ClubUser
+    form_class = UpdateProfileForm
+    # this class will finish later
+    # fields = '__all__'
+    # def get_object(self, *args, **kwargs):
+    #     user = get_object_or_404(User, pk=self.kwargs['pk'])
+    #     user.first_name = self.kwargs['first_name']
+    #     user.last_name = self.kwargs['last_name']
+    #     user.email = self.kwargs['email']
+
+    #     return user.clubuser
+
+    # def get_success_url(self, *args, **kwargs):
+    #     return reverse_lazy('blog:home')
 
 def login(request):
     if request.method == 'POST':
@@ -59,8 +78,8 @@ def login(request):
     else:
         return render(request,'registration/login.html/')
 
-
 def logout(request):
     if request.method == 'POST':
         auth.logout(request)
     return render(request, 'registration/logout.html')
+

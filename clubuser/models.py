@@ -20,6 +20,3 @@ class ClubUser(models.Model):
  
     class Meta :
         pass
-    # def save(self):
-        # pass
-        

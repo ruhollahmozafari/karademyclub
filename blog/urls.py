@@ -11,7 +11,7 @@ app_name='blog'
 urlpatterns = [
     path('',TemplateView.as_view(template_name = 'blog/home_page.html'), name = 'home'),
     path('questions/', ArchiveIndexView.as_view(model=Question,template_name = 'blog/questions.html', date_field="created_date"), name= 'questions'),#just to show all the questoins
-    path('questions/<int:id>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
+    path('questions/<int:pk>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',QuestionsInCategories.as_view(), name = 'questions-in-categories'),
     path('all-categories/', AllCategories.as_view() , name= 'all-categories'), # it is not neccesary because it will be shown on the left or right side of the webpage
     path('ask/',QuestionCreate.as_view(), name = 'ask'),

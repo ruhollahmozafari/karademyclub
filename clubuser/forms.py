@@ -12,4 +12,8 @@ class SignUpForm(UserCreationForm):# try it by inheriting from UserCreationForm 
     class Meta:
         model = User
         fields = ['username','first_name','last_name', 'email','password1', 'password2','interest',"image"]
+class UpdateProfileForm(forms.ModelForm):
     
+    class Meta:
+        model = User
+        fields = ("first_name","last_name","email",)

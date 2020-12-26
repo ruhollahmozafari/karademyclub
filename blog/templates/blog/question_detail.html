@@ -8,6 +8,8 @@
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
+          <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary" role="button" aria-pressed="true">{{question.category}}</a>
+
         </div>
         {% if user == question.user %}
         <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-large">edit the question</a>
@@ -16,9 +18,6 @@
       {% endif %}
     </div>
 </div>
-{% for cat in cats%}
-<a href="url: 'blog/questions-in-categories' cat.title" class="btn btn-outline-primary" role="button" aria-pressed="true">{{cat}}</a>
-{%endfor%}
 
   {% for answer in answers%}
     <div class="card" style="width: 65rem;">
