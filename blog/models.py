@@ -54,15 +54,16 @@ class Question(models.Model):
     status = models.CharField(max_length=15, choices=PUBLISH_STATUS, default='publish')
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
+    like= models.ManyToManyField(User,related_name= 'like_question')
     like_number = models.IntegerField(default=0, null=True ,)
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
     tag = models.ManyToManyField(Tag, blank= True)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
+    
 
     class Meta :
-        pass
+        ordering = ['created_date']
         # add verbose_names later 
-        # ordering = ['-updated_date','Category',]
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title, allow_unicode= True)

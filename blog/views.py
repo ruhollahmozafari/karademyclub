@@ -14,6 +14,18 @@ from django.views.generic import ListView,DetailView,UpdateView, DeleteView, Cre
 from hitcount.views import HitCountDetailView
 
 
+def LikeView(request, pk):
+    obj= get_object_or_404(Question, id = request.POST.get('question_id'))
+    to_detail_slug = obj.slug # to complete the reverse args inorder to complete the url path (both id and slug are required)
+    liked = False
+    if obj.like.filter(id = request.user.id).exists():
+        obj.like.remove(request.user)
+        liked = False
+    else :      
+        obj.like.add(request.user)
+        liked = True
+    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(pk), to_detail_slug]))
+
 
 class QuestionDetail(HitCountDetailView):# we can use method 1 or 2
     #method 1
@@ -21,8 +33,17 @@ class QuestionDetail(HitCountDetailView):# we can use method 1 or 2
     model = Question
     context_object_name = 'question'
     count_hit = True
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj= get_object_or_404(Question, id = self.kwargs['pk'])
+        liked = False
+        if obj.like.filter(id =self.request.user.id).exists():
+            liked= True
+        context["liked"] = liked 
+        return context
     
-#this is not a good approach to do it so the hitcounter was used
+
+#this is not a good approach to do it because it increase the view by every page refresh so the hitcounter was used to track the real views
     # def get_object(self):# getting the question to show while adding one to the views 
     #     object = super(QuestionDetail, self).get_object()
     #     object.views +=1
@@ -35,12 +56,11 @@ class QuestionDetail(HitCountDetailView):# we can use method 1 or 2
         return context
     
     
-
-
 class AllCategories(ListView):
     model = Category
     template_name = 'blog/all_categories.html'
     context_object_name = 'categories'
+
 
 
 class QuestionsInCategories(ListView,): 
@@ -50,8 +70,8 @@ class QuestionsInCategories(ListView,):
     
     def get_queryset(self):
         self.category =get_object_or_404(Category, slug = self.kwargs['slug'])
+
         return Question.objects.filter(category = self.category)
-    
     def get_context_data(self, **kwargs):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
         context["category"] =self.category 
@@ -87,12 +107,10 @@ class QuestionUpdate(UpdateView):#need to check the user log in and writer match
 class QuestionDelete(DeleteView):
 
     def post(self,request):
-        
         if request.user == question.user:
             template_name = 'blog/delete-question.html'
             success_url = reverse_lazy('blog:questions')
     
-
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV

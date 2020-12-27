@@ -18,5 +18,6 @@ urlpatterns = [
     path('update-profile/<int:pk>/', UserUpdate.as_view(), name = 'update-profile'),
     # path('login/', LoginView.as_view(), {'template_name': 'login.html'}, name='login'),
 #   path('login/',clubuser_views.login, name = 'login'),
-
 ]
+
+

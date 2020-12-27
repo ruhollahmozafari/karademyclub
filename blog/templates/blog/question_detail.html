@@ -9,18 +9,34 @@
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
-          <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary" role="button" aria-pressed="true">{{question.category}}</a>
-          <p  role="button" class="btn btn-success btn-large">Views: {% get_hit_count for question %} </p>
-        </div>
-        {% if user == question.user %}
-        <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-large">edit the question</a>
-      <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a>
-
+                  {% if user == question.user %}
+        <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-sm">edit the question</a>
+      <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
       {% endif %}
+          <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
+          <a role="button" class="btn btn-outline-primary btn-sm" aria-pressed="true">Views: {% get_hit_count for question %} </a>
+          
+
+          <br/><be>
+          <br/>
+           <form action = "{% url 'blog:like-question' question.pk %}" method="POST">{% csrf_token %}
+           {% if liked %}
+              <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-danger btn-sm">unlike</button>
+           {%else%}
+              <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-primary btn-sm">like</button>
+           {% endif %}
+           <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">number of likes : {{question.like.count}}</a>
+           </form>
+           
+        </div>
+
       
     </div>
 
 </div>
+    <br/><be>
+          <hr>
+          <br/>
 
   {% for answer in answers%}
     <div class="card" style="width: 65rem;">
