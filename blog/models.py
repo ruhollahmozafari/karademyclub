@@ -37,7 +37,7 @@ class Tag(models.Model):
         self.slug = slugify(self.title, allow_unicode= True)
         super(Tag, self).save(*args, **kwargs)
         super().save(*args, **kwargs)
-
+        
     def __str__(self):
         return self.title
 
@@ -106,6 +106,3 @@ class Report(models.Model):
     
 
 
-
-class Like(models.Model):
-    pass

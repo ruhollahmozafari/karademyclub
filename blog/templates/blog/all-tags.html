@@ -1,0 +1,8 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+{% for tag  in tags %}
+        <a href="{% url 'blog:questions-in-tags' tag.slug %}" role="button" class="btn btn-success btn-large">{{tag.title}}</a>
+{%endfor%}
+
+{% endblock %}

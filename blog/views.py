@@ -70,11 +70,29 @@ class QuestionsInCategories(ListView,):
     
     def get_queryset(self):
         self.category =get_object_or_404(Category, slug = self.kwargs['slug'])
-
         return Question.objects.filter(category = self.category)
+
     def get_context_data(self, **kwargs):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
         context["category"] =self.category 
+        return context
+
+class AllTags(ListView):
+    model = Tag
+    template_name='blog/all-tags.html'
+    context_object_name = 'tags'
+
+class QuestionsInTags(ListView):
+    model = Tag
+    template_name = 'blog/questions-in-tags.html'
+    context_object_name = 'questions'
+    def get_queryset(self,):
+        self.tag =get_object_or_404(Tag, slug = self.kwargs['slug'])
+        return Question.objects.filter(tag = self.tag) 
+
+    def get_context_data(self, **kwargs):
+        context = super(QuestionsInTags,self).get_context_data(**kwargs)
+        context["main_tag"]= self.tag
         return context
 
 
@@ -88,7 +106,17 @@ class QuestionCreate(CreateView):
     def post(self, request):
         form = Ask(request.POST)
         if form.is_valid():
-            question = form.save()
+            question = form.save(commit=False)
+            question.user = request.user
+            question.save()
+            tag_list= form.cleaned_data.get('tag_char')
+            tag_list = tag_list.split()
+            for item in tag_list:
+                obj,created = Tag.objects.get_or_create(title =item)
+                if created:
+                    obj.save()
+                question.tag.add(obj.id)
+            
             question.user = request.user
             question.save()
             form= Ask()
@@ -206,4 +234,3 @@ class QuestionDelete(DeleteView):
 #///////////////////QuestionDetial/////////////////////////////
 
 #///////////////////AllCategories////////////////////////
-

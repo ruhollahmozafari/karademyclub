@@ -6,7 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.forms import  AuthenticationForm
 from django.http import HttpResponse
 from clubuser.models import ClubUser
-from blog.models import  Category, Question, Answer , Report, Like
+from blog.models import  Category, Question, Answer , Report,Tag
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from .forms import *
 from blog import urls
