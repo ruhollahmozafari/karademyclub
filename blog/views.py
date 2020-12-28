@@ -77,6 +77,7 @@ class QuestionsInCategories(ListView,):
         context["category"] =self.category 
         return context
 
+
 class AllTags(ListView):
     model = Tag
     template_name='blog/all-tags.html'
@@ -100,7 +101,6 @@ class QuestionsInTags(ListView):
 class QuestionCreate(CreateView):
     def get(self, request ):
         form = Ask()
-        form = Ask()
         return render(request, 'blog/ask.html',{'form': form})
 
     def post(self, request):
@@ -112,12 +112,14 @@ class QuestionCreate(CreateView):
             tag_list= form.cleaned_data.get('tag_char')
             tag_list = tag_list.split()
             for item in tag_list:
-                obj,created = Tag.objects.get_or_create(title =item)
-                if created:
-                    obj.save()
-                question.tag.add(obj.id)
-            
-            question.user = request.user
+                if Tag.objects.filter(title = item).exists():
+                    temp_tag = Tag.object.filter(title = item).exists
+                    question.tag.add(temp_tag.id)
+                else : 
+                    temp_tag = Tag(title = item)
+                    temp_tag.save()
+                question.tag.add(temp_tag.id)
+
             question.save()
             form= Ask()
             messages.success(request, "Question succesfully created, wait for your answer ")
@@ -126,7 +128,7 @@ class QuestionCreate(CreateView):
 @method_decorator(login_required, name = 'dispatch')
 class QuestionUpdate(UpdateView):#need to check the user log in and writer match
         model = Question
-        fields = ['title', 'body', 'category']
+        fields = ['title', 'body', 'category','tag']
         template_name = 'blog/update_question.html'
         success_url= reverse_lazy('blog:questions')
 

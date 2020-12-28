@@ -7,10 +7,9 @@ class Ask(forms.ModelForm):
         model = Question
         fields = ('title', 'body', 'category')
 
-    # def making_tags(self,):
-    #     tag_list =self.tag_char.split()
-    #     return tag_list
+class UpdateQuestion(forms.ModelForm):
+    tag_char = forms.CharField(max_length= 100,  required = False)
 
-
-
-            
+    class Meta :
+        model =Question
+        fields = ('title', 'body', 'category',)

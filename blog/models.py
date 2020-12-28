@@ -30,7 +30,7 @@ class Category (models.Model):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=56)
+    title = models.CharField(max_length=56,null= True)
     slug = models.SlugField(blank= True , null=True, default='')
     
     def save(self, *args, **kwargs):
@@ -57,7 +57,7 @@ class Question(models.Model):
     like= models.ManyToManyField(User,related_name= 'like_question')
     like_number = models.IntegerField(default=0, null=True ,)
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
-    tag = models.ManyToManyField(Tag, blank= True)
+    tag = models.ManyToManyField(Tag, blank= True,null =True)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
     
 
