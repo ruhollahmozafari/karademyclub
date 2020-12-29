@@ -36,9 +36,9 @@ class QuestionDetail(HitCountDetailView):# we can use method 1 or 2
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj= get_object_or_404(Question, id = self.kwargs['pk'])
-        liked = False
-        if obj.like.filter(id =self.request.user.id).exists():
-            liked= True
+        liked = obj.like.filter(id =self.request.user.id).exists()
+        print(liked*1000)
+        liked =False
         context["liked"] = liked 
         return context
     
