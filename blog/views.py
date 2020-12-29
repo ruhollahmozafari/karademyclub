@@ -3,15 +3,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse ,reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse , HttpResponseRedirect
-from blog.models import  Answer, Tag , Category, Question
+from blog.models import  Answer, Tag , Category, Question, Report
 from django.contrib import messages 
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
-from .forms import Ask ,AnswerForm
+from .forms import Ask ,AnswerForm,ReportForm
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from hitcount.views import HitCountDetailView
+from django.contrib.contenttypes.models import ContentType
+
 
 # @method_decorator(login_required, name = 'dispatch')
 def LikeQuestionView(request, pk):
@@ -31,9 +33,8 @@ def LikeAnswerView(request, pk):
         answer.like.remove(request.user)
     else :
         answer.like.add(request.user)
-    
-    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(answer.question_id.id), str(answer.question_id.slug)]))
 
+    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(answer.question_id.id), str(answer.question_id.slug)]))
 
 class QuestionDetail(DetailView):# we can use method 1 or 2
 
@@ -57,7 +58,6 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
         context["liked "] = liked
         return context
         
-
 class AllCategories(ListView):
     model = Category
     template_name = 'blog/all_categories.html'
@@ -94,7 +94,6 @@ class QuestionsInTags(ListView):
         context = super(QuestionsInTags,self).get_context_data(**kwargs)
         context["main_tag"]= self.tag
         return context
-
 
 @method_decorator(login_required, name = 'dispatch')
 class QuestionUpdate(UpdateView):#need to check the user log in and writer match
@@ -137,6 +136,8 @@ class QuestionCreate(CreateView):
             messages.success(request, "Question succesfully created, wait for your answer ")
         return HttpResponseRedirect(reverse_lazy('blog:questions'))
 
+
+
 @method_decorator(login_required, name = 'dispatch')
 class WriteAnswer(CreateView):
     success_url = reverse_lazy('blog:question')
@@ -168,22 +169,63 @@ class WriteAnswer(CreateView):
             # return HttpResponseRedirect(reverse_lazy('blog:questions'))
             return HttpResponseRedirect(reverse_lazy('blog:question-detail', args=[question.id, question.slug]))
 
+@method_decorator(login_required, name = 'dispatch')
 class DeleteAnswer(DeleteView):
     model = Answer
     template_name = 'blog/delete-answer.html'
     success_url = reverse_lazy('blog:questions')
 
+@method_decorator(login_required, name = 'dispatch')
 class UpdateAnswer(UpdateView):
     model = Answer
     template_name = 'blog/update-answer.html'
     fields = ['body']
     success_url= reverse_lazy('blog:questions')
 
+class ListReport(ListView):
+    model = Report
+    template_name = 'blog/all-reports.html'
+    context_object_name = 'reports'
+
+
+class ViewReport(DetailView):
+    model = Report
+    template_name = 'blog/report.html'
+    content_type = 'report'
+
+# ContentType.objects.get_for_model(q)
+class CreateReport(CreateView):
+    template_name = 'blog/create-report.html'
+    form_class = ReportForm
+
+    def get(self, request ,*args,**kwargs ):
+        form = ReportForm()
+        return render(request, 'blog/create-report.html',{'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            # report.refresh_from_db()
+            report.reporter = request.user
+            
+            Type ='Answer'
+            
+            obj = Type.objects.get(id= self.kwargs['pk'])
+            # answer = Answer.objects.get(id = self.kwargs['pk'])
+            report.content_type = ContentType.objects.get_for_model(answer)
+            report.object_id = answer.id
+            report.detail = form.cleaned_data.get('detail')
+            report.reason = form.cleaned_data.get('reason')
+            report.save()
+            form= Ask()
+            messages.success(request, "report succesfully created, we will respond to your ")
+        return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
 
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV
-# kept it for the sake of learning
+# kept it for learning and checking later
 
 
 # def ask(request):# this is gonna be a pop up rather than a single page

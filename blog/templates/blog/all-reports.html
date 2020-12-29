@@ -1,0 +1,15 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+{% for report  in reports  %}
+
+<h2>{{report.reason}}    {{report.detail}}</h2>
+
+{% comment %} 
+ <a href="{% url 'blog:report' report.pk %}" role="button" class="btn btn-success btn-large"> more </a> 
+ {% endcomment %}
+
+
+{%endfor%}
+
+{% endblock %}

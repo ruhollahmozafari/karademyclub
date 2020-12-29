@@ -2,7 +2,7 @@ from django.urls import path
 from django.urls import reverse
 from .models import *
 from . import views as blog_views
-from blog.views import DeleteAnswer, UpdateAnswer , QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete, QuestionCreate, LikeQuestionView,LikeAnswerView, QuestionsInTags,AllTags,WriteAnswer
+from blog.views import DeleteAnswer,ViewReport, CreateReport, CreateReport ,ListReport, UpdateAnswer , QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete, QuestionCreate, LikeQuestionView,LikeAnswerView, QuestionsInTags,AllTags,WriteAnswer
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic import TemplateView
 from . import api_views
@@ -25,9 +25,8 @@ urlpatterns = [
     path('answer/<int:pk>/', WriteAnswer.as_view(), name = 'write-answer'),
     path('delete-answer/<int:pk>', DeleteAnswer.as_view(), name = 'delete-answer'),
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),
-
-
-
-
+    path('report/<int:pk>/', ViewReport.as_view(), name = 'report'),
+    path('all-reports/', ListReport.as_view(), name = 'all-reports'),
+    path('create-report/<int:pk>/<str:str>/', CreateReport.as_view(), name = 'create-report'),
 
 ]

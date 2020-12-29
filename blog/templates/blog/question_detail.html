@@ -14,12 +14,17 @@
         <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-sm">edit the question</a>
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
       {% endif %}
+
+
+<a href="{% url 'blog:create-report' question.pk 'Question' %}" role="button" class="btn btn-warning btn-sm">report</a>
+
+
+
           <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
           <a role="button" class="btn btn-outline-primary btn-sm" aria-pressed="true">Views: {% get_hit_count for question %} </a>
           {% for tag in question.tag.all %}
           <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a>
           {% endfor%}
-
           <br/><be>
           <br/>
           {% if not user.authenticated  %}
@@ -34,12 +39,8 @@
            {% else %}
                       <a href="{% url 'clubuser:signup' %}" aria-pressed="true">log in to like</a>
            {% endif %}
-   
         </div>
-
-      
     </div>
-
 </div>
     <br/><be>
           <hr>
@@ -49,17 +50,16 @@ there is {{ anwers.count }} answer(s) for this question
 {% else %}
 <h2>Unfortunately this question has no answer yet !!!</h2>
 {% endif %}
- <h3> Amswers </h3>
+ <h3> Answers </h3>
   {% for answer in answers%}
-  
     <div class="card" style="width: 69.5rem; height: 15rem">
       <div class="card-body">
         <h5 class="card-title">{{answer.user}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{answer.created_date}}</h6>
         <p class="card-text">{{answer.body|safe}}</p>
 {% if user == answer.user %}
-        <a href="{% url 'blog:update-answer' answer.pk %}" role="button" class="btn btn-success btn-sm">edit the question</a>
-      <a href="{% url 'blog:delete-answer' answer.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
+        <a href="{% url 'blog:update-answer' answer.pk %}" role="button" class="btn btn-success btn-sm">edit the answer</a>
+      <a href="{% url 'blog:delete-answer' answer.pk %}" role="button" class="btn btn-danger btn-sm">delete this answer</a>
       {% endif %}
           <br/><be>
           <br/>
@@ -70,7 +70,13 @@ there is {{ anwers.count }} answer(s) for this question
               <button type = "submit" , name = "answer_id", value = "{{answer.pk}}", class ="btn btn-success btn-sm">vote up</button>
                   {% endif %}
            <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">likes : {{answer.like.count}}</a>
-           </form>
+
+
+
+<a href="{% url 'blog:create-report' answer.pk 'Answer' %}" role="button" class="btn btn-warning btn-sm">report</a>
+
+
+
       </div>
     </div>
 {%endfor%}

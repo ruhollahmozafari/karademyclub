@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<div class ="d-flex">
+    <div class="card" style="width: 100rem; height: 15rem">
+        <h5 class="card-header">{{report.reason}}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{report.reporter}}</h5>
+          <p class="card-text">{{ report.detail }}</p>
+            <h5 class="card-title">{{report.content_type}}</h5>
+          <p class="card-text">{{ report.content_object }}</p>
+ 
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+

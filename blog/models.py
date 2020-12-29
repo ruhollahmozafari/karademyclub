@@ -10,6 +10,8 @@ from django.conf import settings
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
 from six import python_2_unicode_compatible
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 
@@ -57,7 +59,7 @@ class Question(models.Model):
     like= models.ManyToManyField(User,related_name= 'like_question')
     like_number = models.IntegerField(default=0, null=True ,)
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
-    tag = models.ManyToManyField(Tag, blank= True,null =True)
+    tag = models.ManyToManyField(Tag, blank= True)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
     
 
@@ -97,12 +99,31 @@ class Answer(models.Model):
 
 
 class Report(models.Model):
-    pass # we still have got to this in tutorials
-    # user_id = models.ForeignKey("ClubUser", on_delete=models.CASCADE, verbose_name='reprter', related_name= 'functioner')
-    # reported_profile = models.ForeignKey("ClubUser" , null=True, on_delete=models.CASCADE, verbose_name='reported profile')
-    # question_id = models.ForeignKey("Question", null = True , on_delete=models.CASCADE)
-    # answer_id = models.ForeignKey(Answer, null=True , on_delete = models.CASCADE)
-    # reprted_date = models.DateTimeField(auto_now_add= True , null= True)
+    pass
+    REPORT_REASONS = (
+        ("not related to programing" ,"not related to programing"),
+        ("insulting","insulting"),
+        ("sexual matters",'sexual matters'),
+        ("wrong answer","wrong answer"),
+        ("inappropriate","inappropriate"),
+        ("other","other"),
+    )
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    content_type = models.ForeignKey(ContentType,on_delete= models.CASCADE, default= None)
+    object_id = models.PositiveIntegerField(default = None)
+    content_object = GenericForeignKey('content_type', 'object_id')
+    detail = models.CharField(max_length=200, null= True , blank = True, default ='')
+    reason = models.CharField(max_length=35, choices=REPORT_REASONS, default='publish')
+    report_date = models.DateTimeField(auto_now_add= True , null= True)
+
+    def __str__(self):
+        return str(self.content_object)
+    
+
+
+
+
+
     
 
 
