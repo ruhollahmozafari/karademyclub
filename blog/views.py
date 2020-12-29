@@ -7,61 +7,61 @@ from blog.models import  Answer, Tag , Category, Question
 from django.contrib import messages 
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
-from .forms import Ask
+from .forms import Ask ,AnswerForm
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from hitcount.views import HitCountDetailView
 
-
-def LikeView(request, pk):
-    obj= get_object_or_404(Question, id = request.POST.get('question_id'))
-    to_detail_slug = obj.slug # to complete the reverse args inorder to complete the url path (both id and slug are required)
-    liked = False
-    if obj.like.filter(id = request.user.id).exists():
-        obj.like.remove(request.user)
-        liked = False
+# @method_decorator(login_required, name = 'dispatch')
+def LikeQuestionView(request, pk):
+    question= get_object_or_404(Question, id = request.POST.get('question_id'))
+    if question.like.filter(id = request.user.id).exists():
+        question.like.remove(request.user)
     else :      
-        obj.like.add(request.user)
-        liked = True
-    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(pk), to_detail_slug]))
+        question.like.add(request.user)
+    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(pk), question.slug]))
+
+# @method_decorator(login_required, name = 'dispatch')
+def LikeAnswerView(request, pk):
+    print('enter the def anser like' * 10)
+    answer= get_object_or_404(Answer, id= request.POST.get('answer_id'))
+    print(answer.id * 1000)
+    if answer.like.filter(id = request.user.id).exists():
+        answer.like.remove(request.user)
+    else :
+        answer.like.add(request.user)
+    
+    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(answer.question_id.id), str(answer.question_id.slug)]))
 
 
-class QuestionDetail(HitCountDetailView):# we can use method 1 or 2
-    #method 1
+class QuestionDetail(DetailView):# we can use method 1 or 2
+
     template_name = 'blog/question_detail.html'
     model = Question
     context_object_name = 'question'
     count_hit = True
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        obj= get_object_or_404(Question, id = self.kwargs['pk'])
-        liked = obj.like.filter(id =self.request.user.id).exists()
-        print(liked*1000)
-        liked =False
-        context["liked"] = liked 
-        return context
-    
 
-#this is not a good approach to do it because it increase the view by every page refresh so the hitcounter was used to track the real views
-    # def get_object(self):# getting the question to show while adding one to the views 
-    #     object = super(QuestionDetail, self).get_object()
-    #     object.views +=1
-    #     object.save()
-    #     return object
-    
-    def get_context_data(self, **kwargs):# fetching the answers of the same question
+    def get_queryset(self):
+        return Question.objects.filter(id = self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
         context = super(QuestionDetail,self).get_context_data(**kwargs)
-        context["answers"]= Answer.objects.filter(question_id= self.kwargs['pk'])
+        self.obj= get_object_or_404(Question, id = self.kwargs['pk'])
+        self.object.save()
+        self.object.refresh_from_db()
+        answers = Answer.objects.filter (question_id = self.obj.id)
+        liked =self.obj.like.filter(id =self.request.user.id).exists()
+        print('liked in class question not checked still' *10)
+        context["answers"]=answers
+        context["liked "] = liked
         return context
-    
-    
+        
+
 class AllCategories(ListView):
     model = Category
     template_name = 'blog/all_categories.html'
     context_object_name = 'categories'
-
-
 
 class QuestionsInCategories(ListView,): 
     model = Question
@@ -76,7 +76,6 @@ class QuestionsInCategories(ListView,):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
         context["category"] =self.category 
         return context
-
 
 class AllTags(ListView):
     model = Tag
@@ -97,6 +96,19 @@ class QuestionsInTags(ListView):
         return context
 
 
+@method_decorator(login_required, name = 'dispatch')
+class QuestionUpdate(UpdateView):#need to check the user log in and writer match
+        model = Question
+        fields = ['title', 'body', 'category','tag']
+        template_name = 'blog/update_question.html'
+        success_url= reverse_lazy('blog:questions')
+
+@method_decorator(login_required, name = 'dispatch')
+class QuestionDelete(DeleteView):
+    model =Question
+    template_name = 'blog/delete-question.html'
+    success_url = reverse_lazy('blog:questions')
+            
 @method_decorator(login_required, name = 'dispatch')
 class QuestionCreate(CreateView):
     def get(self, request ):
@@ -124,23 +136,50 @@ class QuestionCreate(CreateView):
             form= Ask()
             messages.success(request, "Question succesfully created, wait for your answer ")
         return HttpResponseRedirect(reverse_lazy('blog:questions'))
-    
-@method_decorator(login_required, name = 'dispatch')
-class QuestionUpdate(UpdateView):#need to check the user log in and writer match
-        model = Question
-        fields = ['title', 'body', 'category','tag']
-        template_name = 'blog/update_question.html'
-        success_url= reverse_lazy('blog:questions')
-
 
 @method_decorator(login_required, name = 'dispatch')
-class QuestionDelete(DeleteView):
+class WriteAnswer(CreateView):
+    success_url = reverse_lazy('blog:question')
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["question"] = Question.objects.get(id = self.kwargs['pk'])
+    #     return context
+    def get(self, request , pk):
+        form = AnswerForm()
+        question_to_answer = get_object_or_404(Question, id = pk)
+        context = {
+            "form":form,
+            "question": question_to_answer,
+        }
+        return render(request, 'blog/answer-question.html',context)
 
-    def post(self,request):
-        if request.user == question.user:
-            template_name = 'blog/delete-question.html'
-            success_url = reverse_lazy('blog:questions')
-    
+
+    def post(self, request,pk):
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.user = request.user
+            answer.body = form.cleaned_data.get('body')
+            answer.question_id = Question.objects.get(id = request.POST.get('question_id'))
+            question= get_object_or_404(Question, id = pk)
+            # answer.question_id = form.cleaned_data.get('question_id')
+            answer.save()
+            form = AnswerForm()
+            # return HttpResponseRedirect(reverse_lazy('blog:questions'))
+            return HttpResponseRedirect(reverse_lazy('blog:question-detail', args=[question.id, question.slug]))
+
+class DeleteAnswer(DeleteView):
+    model = Answer
+    template_name = 'blog/delete-answer.html'
+    success_url = reverse_lazy('blog:questions')
+
+class UpdateAnswer(UpdateView):
+    model = Answer
+    template_name = 'blog/update-answer.html'
+    fields = ['body']
+    success_url= reverse_lazy('blog:questions')
+
+
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV

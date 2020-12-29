@@ -1,0 +1,35 @@
+{% extends 'layouts/base.html' %}
+{% load hitcount_tags %}
+
+{% block content %}
+
+<div class ="d-flex">
+    <div class="card" style="width: 100rem; height: 15rem">
+        <h5 class="card-header">{{question.user.username }}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{question.title}}</h5>
+          <p class="card-text">{{ question.body|safe }}</p>
+                  {% if user == question.user %}
+        <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-sm">edit the question</a>
+      <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
+      {% endif %}
+          <a role="button" class="btn btn-outline-primary btn-sm" aria-pressed="true">Views: {% get_hit_count for question %} </a>
+          {% for tag in question.tag.all %}
+          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a>
+          {% endfor%}
+
+          <br/><be>
+          <br/>
+          <br/><be>
+          <br/>
+          <h1> Write your answer </h1>
+          
+<form method="POST">{% csrf_token %}
+    {{form.media}}
+    {{ form.as_p }}
+    <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-success btn-sm">submit your answer</button>
+</form>
+{% endblock %}
+           
+          
+
