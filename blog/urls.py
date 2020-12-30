@@ -25,7 +25,6 @@ urlpatterns = [
     path('answer/<int:pk>/', WriteAnswer.as_view(), name = 'write-answer'),
     path('delete-answer/<int:pk>', DeleteAnswer.as_view(), name = 'delete-answer'),
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),
-    path('report/<int:pk>/', ViewReport.as_view(), name = 'report'),
     path('all-reports/', ListReport.as_view(), name = 'all-reports'),
     path('create-report/<str:app>/<str:model>/<int:pk>/', CreateReport.as_view(), name = 'create-report'),
 

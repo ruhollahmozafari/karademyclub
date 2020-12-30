@@ -193,7 +193,6 @@ class ViewReport(DetailView):
     template_name = 'blog/report.html'
     content_type = 'report'
 
-# ContentType.objects.get_for_model(q)
 class CreateReport(CreateView):
     template_name = 'blog/create-report.html'
     form_class = ReportForm
@@ -219,7 +218,6 @@ class CreateReport(CreateView):
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
-
 
 
 
