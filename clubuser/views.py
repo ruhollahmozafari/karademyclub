@@ -10,6 +10,7 @@ from blog.models import  Category, Question, Answer , Report,Tag
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from .forms import *
 from blog import urls
+from blog.views import *
 
 
 def profile(request, id):
@@ -36,15 +37,14 @@ class UserCreation(CreateView):
             # new_user.club_user.profile_image = signup_form.cleaned_data.get('image')
             interest1 = signup_form.cleaned_data.get('interest')
             new_user.save()
-            raw_password = signup_form.cleaned_data.get('password1')
-            new_user = authenticate(username=new_user.username, password=raw_password)
+            new_user = authenticate(username=new_user.username, password=signup_form.cleaned_data.get('password1'))
             new1 = ClubUser.objects.create(user = new_user,)
             new1.interest.add(interest1)
             # new_user.user_clubuser.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
             new1.save()
             # if user is not None: add these later to go to another page
-            #     login(request, user)
-        return redirect('clubuser:login') 
+            login(request, new_user)
+        return redirect('blog:questions') 
 
     def get(self, request):
         signup_form = SignUpForm()

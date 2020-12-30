@@ -7,15 +7,14 @@ from blog.models import  Answer, Tag , Category, Question, Report
 from django.contrib import messages 
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
-from .forms import Ask ,AnswerForm,ReportForm
+from .forms import Ask ,AnswerForm
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from hitcount.views import HitCountDetailView
 from django.contrib.contenttypes.models import ContentType
 from clubuser.models import ClubUser
-from django.contrib.auth.models import User,Group, Permission
-from django.apps import apps
+from django.contrib.auth.models import User
 
 @login_required    #at first we userd two different functions handle for like for question and answer specifically but then we used one funstions to handle both of them  
 def LikeCreate(request, *args, **kwargs):

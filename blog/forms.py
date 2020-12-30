@@ -19,7 +19,7 @@ class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ("body",)
-
+        
 class ReportForm(forms.ModelForm):
     
     class Meta:
@@ -29,5 +29,3 @@ class ReportForm(forms.ModelForm):
             'reason',
             'detail',
         ]
-
-

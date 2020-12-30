@@ -3,7 +3,8 @@ from .models import ClubUser
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import ClubUser
-from blog.models import Category
+from blog.models import Category, Report
+from blog.forms import *
 
 
 class SignUpForm(UserCreationForm):# try it by inheriting from UserCreationForm and see what will happen use this link : https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
@@ -17,3 +18,6 @@ class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("first_name","last_name","email",)
+
+
+
