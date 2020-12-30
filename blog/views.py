@@ -57,7 +57,7 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
         context["answers"]=answers
         context["liked "] = liked
         return context
-        
+
 class AllCategories(ListView):
     model = Category
     template_name = 'blog/all_categories.html'
@@ -208,19 +208,18 @@ class CreateReport(CreateView):
             report = form.save(commit=False)
             # report.refresh_from_db()
             report.reporter = request.user
-            
-            Type ='Answer'
-            
-            obj = Type.objects.get(id= self.kwargs['pk'])
+            report.content_type =ContentType.objects.get(app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())# note that all the app and model name msut be lowercase 
+            # obj = Type.objects.get(id= self.kwargs['pk'])
             # answer = Answer.objects.get(id = self.kwargs['pk'])
-            report.content_type = ContentType.objects.get_for_model(answer)
-            report.object_id = answer.id
+            # report.content_type = ContentType.objects.get_for_model(answer)
+            report.object_id = self.kwargs['pk']
             report.detail = form.cleaned_data.get('detail')
             report.reason = form.cleaned_data.get('reason')
             report.save()
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
+
 
 
 

@@ -16,7 +16,7 @@
       {% endif %}
 
 
-<a href="{% url 'blog:create-report' question.pk 'Question' %}" role="button" class="btn btn-warning btn-sm">report</a>
+<a href="{% url 'blog:create-report' 'blog' 'question' question.pk %}" role="button" class="btn btn-warning btn-sm">report</a>
 
 
 
@@ -73,7 +73,7 @@ there is {{ anwers.count }} answer(s) for this question
 
 
 
-<a href="{% url 'blog:create-report' answer.pk 'Answer' %}" role="button" class="btn btn-warning btn-sm">report</a>
+<a href="{% url 'blog:create-report' 'blog' 'Answer' answer.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
 
 
 

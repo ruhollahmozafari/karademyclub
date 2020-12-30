@@ -57,7 +57,6 @@ class Question(models.Model):
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
     like= models.ManyToManyField(User,related_name= 'like_question')
-    like_number = models.IntegerField(default=0, null=True ,)
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
     tag = models.ManyToManyField(Tag, blank= True)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
@@ -103,7 +102,7 @@ class Report(models.Model):
     REPORT_REASONS = (
         ("not related to programing" ,"not related to programing"),
         ("insulting","insulting"),
-        ("sexual matters",'sexual matters'),
+        ("sexual content",'sexual content'),
         ("wrong answer","wrong answer"),
         ("inappropriate","inappropriate"),
         ("other","other"),

@@ -3,13 +3,19 @@
 {% block content %}
 {% for report  in reports  %}
 
-<h2>{{report.reason}}    {{report.detail}}</h2>
-
-{% comment %} 
- <a href="{% url 'blog:report' report.pk %}" role="button" class="btn btn-success btn-large"> more </a> 
- {% endcomment %}
-
-
+<div class="card">
+  <div class="card-header">
+  {{report.reporter}}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{report.reason}} </h5>
+    <p class="card-text">{{report.detail}}</p>
+    <p class="btn btn-primary"> {{report.content_object}}</p>
+      <p = "#" class="card-footer text-muted">
+      {{report.content_object.body}}
+  </p>
+  <a href = " {% url 'blog:report' report.id %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true"> see more for this report case</a>
+</div>
 {%endfor%}
 
 {% endblock %}
