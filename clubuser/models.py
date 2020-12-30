@@ -19,4 +19,8 @@ class ClubUser(models.Model):
             return self.profile_image.url
  
     class Meta :
-        pass
+        permissions = (
+            ('can_view', 'Can View'),
+            ('can_modify', 'Can Modify'),
+        )
+

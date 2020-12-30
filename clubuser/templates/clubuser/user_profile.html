@@ -74,10 +74,14 @@
               <li class="breadcrumb-item"><a href="{% url 'blog:home' %}">Home</a></li>
               <li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
               <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+
+
+              <a href="{% url 'blog:create-report' 'clubsuer' 'clubuser' user.clubuser.pk %}" role="button" class="btn btn-warning btn-sm">report</a>
+              
+              
             </ol>
           </nav>
           <!-- /Breadcrumb -->
-    
           <div class="row gutters-sm">
             <div class="col-md-4 mb-3">
               <div class="card">

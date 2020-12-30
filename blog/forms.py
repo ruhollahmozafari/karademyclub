@@ -1,5 +1,7 @@
 from django import forms
 from .models import Question, Answer,Report
+from clubuser.models import ClubUser
+from django.contrib.auth.models import User
 
 class Ask(forms.ModelForm):
     tag_char = forms.CharField(max_length= 100,  required = False)

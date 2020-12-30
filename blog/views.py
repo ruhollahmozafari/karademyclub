@@ -13,28 +13,26 @@ from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from hitcount.views import HitCountDetailView
 from django.contrib.contenttypes.models import ContentType
+from clubuser.models import ClubUser
+from django.contrib.auth.models import User,Group, Permission
+from django.apps import apps
 
-
-# @method_decorator(login_required, name = 'dispatch')
-def LikeQuestionView(request, pk):
-    question= get_object_or_404(Question, id = request.POST.get('question_id'))
-    if question.like.filter(id = request.user.id).exists():
-        question.like.remove(request.user)
-    else :      
-        question.like.add(request.user)
-    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(pk), question.slug]))
-
-# @method_decorator(login_required, name = 'dispatch')
-def LikeAnswerView(request, pk):
-    print('enter the def anser like' * 10)
-    answer= get_object_or_404(Answer, id= request.POST.get('answer_id'))
-    print(answer.id * 1000)
-    if answer.like.filter(id = request.user.id).exists():
-        answer.like.remove(request.user)
+@login_required    #at first we userd two different functions handle for like for question and answer specifically but then we used one funstions to handle both of them  
+def LikeCreate(request, *args, **kwargs):
+    object_type = ContentType.objects.get(app_label= kwargs['app'], model = kwargs['model'],)
+    real_object = object_type.get_object_for_this_type(id = kwargs['pk'])
+    if kwargs['model']=='answer':
+        id_to_question= real_object.question_id.id
+        slug_to_question = real_object.question_id.slug
     else :
-        answer.like.add(request.user)
+        id_to_question = real_object.id
+        slug_to_question = real_object.slug
+    if real_object.like.filter(id = request.user.id).exists():
+        real_object.like.remove(request.user)
+    else:
+        real_object.like.add(request.user)
 
-    return HttpResponseRedirect(reverse('blog:question-detail', args=[str(answer.question_id.id), str(answer.question_id.slug)]))
+    return HttpResponseRedirect(reverse('blog:question-detail',args = [id_to_question , slug_to_question]))
 
 class QuestionDetail(DetailView):# we can use method 1 or 2
 
@@ -74,7 +72,7 @@ class QuestionsInCategories(ListView,):
 
     def get_context_data(self, **kwargs):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
-        context["category"] =self.category 
+        context["main_category"] =self.category 
         return context
 
 class AllTags(ListView):
@@ -102,12 +100,14 @@ class QuestionUpdate(UpdateView):#need to check the user log in and writer match
         template_name = 'blog/update_question.html'
         success_url= reverse_lazy('blog:questions')
 
+
 @method_decorator(login_required, name = 'dispatch')
 class QuestionDelete(DeleteView):
     model =Question
     template_name = 'blog/delete-question.html'
     success_url = reverse_lazy('blog:questions')
             
+
 @method_decorator(login_required, name = 'dispatch')
 class QuestionCreate(CreateView):
     def get(self, request ):
@@ -135,7 +135,6 @@ class QuestionCreate(CreateView):
             form= Ask()
             messages.success(request, "Question succesfully created, wait for your answer ")
         return HttpResponseRedirect(reverse_lazy('blog:questions'))
-
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -169,11 +168,13 @@ class WriteAnswer(CreateView):
             # return HttpResponseRedirect(reverse_lazy('blog:questions'))
             return HttpResponseRedirect(reverse_lazy('blog:question-detail', args=[question.id, question.slug]))
 
+
 @method_decorator(login_required, name = 'dispatch')
 class DeleteAnswer(DeleteView):
     model = Answer
     template_name = 'blog/delete-answer.html'
     success_url = reverse_lazy('blog:questions')
+
 
 @method_decorator(login_required, name = 'dispatch')
 class UpdateAnswer(UpdateView):
@@ -182,17 +183,16 @@ class UpdateAnswer(UpdateView):
     fields = ['body']
     success_url= reverse_lazy('blog:questions')
 
+
+@method_decorator(login_required, name = 'dispatch')
 class ListReport(ListView):
     model = Report
     template_name = 'blog/all-reports.html'
     context_object_name = 'reports'
+    ordering= ['-report_date']
+  
 
-
-class ViewReport(DetailView):
-    model = Report
-    template_name = 'blog/report.html'
-    content_type = 'report'
-
+@method_decorator(login_required, name = 'dispatch')
 class CreateReport(CreateView):
     template_name = 'blog/create-report.html'
     form_class = ReportForm
@@ -205,12 +205,8 @@ class CreateReport(CreateView):
         form = ReportForm(request.POST)
         if form.is_valid():
             report = form.save(commit=False)
-            # report.refresh_from_db()
             report.reporter = request.user
             report.content_type =ContentType.objects.get(app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())# note that all the app and model name msut be lowercase 
-            # obj = Type.objects.get(id= self.kwargs['pk'])
-            # answer = Answer.objects.get(id = self.kwargs['pk'])
-            # report.content_type = ContentType.objects.get_for_model(answer)
             report.object_id = self.kwargs['pk']
             report.detail = form.cleaned_data.get('detail')
             report.reason = form.cleaned_data.get('reason')
@@ -218,7 +214,6 @@ class CreateReport(CreateView):
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
-
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV
@@ -314,3 +309,26 @@ class CreateReport(CreateView):
 #///////////////////QuestionDetial/////////////////////////////
 
 #///////////////////AllCategories////////////////////////
+
+
+
+#at first we userd two different functions handle for like for question and answer specifically but then we used one funstions to handle both of them  
+# # @method_decorator(login_required, name = 'dispatch')
+# def LikeQuestionView(request, pk):
+#     question= get_object_or_404(Question, id = request.POST.get('question_id'))
+#     if question.like.filter(id = request.user.id).exists():
+#         question.like.remove(request.user)
+#     else :      
+#         question.like.add(request.user)
+#     return HttpResponseRedirect(reverse('blog:question-detail', args=[str(pk), question.slug]))
+
+# # @method_decorator(login_required, name = 'dispatch')
+# def LikeAnswerView(request, pk):
+#     print('enter the def anser like' * 10)
+#     answer= get_object_or_404(Answer, id= request.POST.get('answer_id'))
+#     print(answer.id * 1000)
+#     if answer.like.filter(id = request.user.id).exists():
+#         answer.like.remove(request.user)
+#     else :
+#         answer.like.add(request.user)
+#     return HttpResponseRedirect(reverse('blog:question-detail', args=[str(answer.question_id.id), str(answer.question_id.slug)]))

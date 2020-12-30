@@ -2,7 +2,7 @@ from django.urls import path
 from django.urls import reverse
 from .models import *
 from . import views as blog_views
-from blog.views import DeleteAnswer,ViewReport, CreateReport, CreateReport ,ListReport, UpdateAnswer , QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete, QuestionCreate, LikeQuestionView,LikeAnswerView, QuestionsInTags,AllTags,WriteAnswer
+from blog.views import DeleteAnswer, CreateReport, CreateReport ,ListReport, UpdateAnswer , QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete, QuestionCreate, LikeCreate, QuestionsInTags,AllTags,WriteAnswer
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic import TemplateView
 from . import api_views
@@ -20,8 +20,8 @@ urlpatterns = [
     path('update-question/<int:pk>/', QuestionUpdate.as_view(),name = 'update-question'),
     path('delete-question/<int:pk>/', QuestionDelete.as_view(), name = 'delete-question'),
     path('api/categories/',api_views.category_list),
-    path('like-question/<int:pk>/', LikeQuestionView, name = 'like-question'),
-    path('like-answer/<int:pk>/', LikeAnswerView, name = 'like-answer'),
+    path('create-like/<str:app>/<str:model>/<int:pk>/', LikeCreate, name = 'create-like'),
+    # path('like-answer/<int:pk>/', LikeAnswerView, name = 'like-answer'),
     path('answer/<int:pk>/', WriteAnswer.as_view(), name = 'write-answer'),
     path('delete-answer/<int:pk>', DeleteAnswer.as_view(), name = 'delete-answer'),
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),

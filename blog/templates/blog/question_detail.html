@@ -5,7 +5,13 @@
 
 <div class ="d-flex">
     <div class="card" style="width: 100rem; height: 15rem">
-        <h5 class="card-header">{{question.user.username }}</h5>
+        <h5 class="card-header">  
+                  {% for tag in question.tag.all %}
+          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a>
+              <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
+         {{question.user.username}}
+          {% endfor%}
+        </h5>
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
@@ -14,21 +20,13 @@
         <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-sm">edit the question</a>
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
       {% endif %}
-
-
 <a href="{% url 'blog:create-report' 'blog' 'question' question.pk %}" role="button" class="btn btn-warning btn-sm">report</a>
-
-
-
-          <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
           <a role="button" class="btn btn-outline-primary btn-sm" aria-pressed="true">Views: {% get_hit_count for question %} </a>
-          {% for tag in question.tag.all %}
-          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a>
-          {% endfor%}
+
           <br/><be>
           <br/>
           {% if not user.authenticated  %}
-                <form action = "{% url 'blog:like-question' question.pk %}" method="POST">{% csrf_token %}
+                <form action = "{% url 'blog:create-like' 'blog' 'question' question.pk %}" method="POST">{% csrf_token %}
            {% if user in  question.like.all %}
               <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-secondary btn-sm">unlike</button>
            {%else%}
@@ -63,7 +61,7 @@ there is {{ anwers.count }} answer(s) for this question
       {% endif %}
           <br/><be>
           <br/>
-           <form action = "{% url 'blog:like-answer' answer.pk %}" method="POST">{% csrf_token %}
+           <form action = "{% url 'blog:create-like' 'blog' 'answer' answer.pk %}" method="POST">{% csrf_token %}
                   {% if user in  answer.like.all %}
               <button type = "submit" , name = "answer_id", value = "{{answer.pk}}", class ="btn btn-danger btn-sm">vote down</button>
                   {%else%}
@@ -80,7 +78,6 @@ there is {{ anwers.count }} answer(s) for this question
       </div>
     </div>
 {%endfor%}
-
     <br/><be>
           <hr>
           <br/>
