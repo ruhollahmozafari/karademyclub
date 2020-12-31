@@ -1,13 +1,14 @@
 {% extends 'layouts/base.html' %}
+{% block title %} Change Password
+{% endblock title %} 
 
+<h1>Change Password</h1>
 {% block content %}
 {% load crispy_forms_tags %}
-<!-- more detail for front will be added in cloze future -->
 <form method="POST" enctype="multipart/form-data" >
 	{% csrf_token %}
-	{{ signup_form|crispy  }}
-	
-	<button type= "submit"  class="btn btn-dark">Post</button>
+	{{ form|crispy  }}
+	<button type= "submit"  class="btn btn-dark">Submit</button>
 </form>
 
 {% endblock %}

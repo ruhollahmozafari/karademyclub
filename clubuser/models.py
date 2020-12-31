@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
 from django.utils.text import slugify
 from django.contrib import auth
+from PIL import Image
 
 class ClubUser(models.Model):
     gender_choices={('male','آقا'),('woman','خانم')}
@@ -23,4 +24,13 @@ class ClubUser(models.Model):
             ('can_view', 'Can View'),
             ('can_modify', 'Can Modify'),
         )
+    # def save(self,*args, **kwargs):
+    #     super().save()
+    #     if self.profile_image.path:
+    #         img = Image.open(self.profile_image.path)
 
+    #         if img.height > 300 or img.width > 300:
+    #             output_size = (300, 300)
+    #             img.thumbnail(output_size)
+    #             img.save(self.profile_image.path)
+                    

@@ -1,25 +1,23 @@
 from django.urls import path
-from django.conf import settings
 from django.conf.urls.static import static
-from . import views as clubuser_views
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.views import LogoutView
-from .views import UserCreation,UserUpdate
-
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from .views import *
+from django.views.generic import TemplateView
 
 # from blog.views import views as question_views
 app_name='clubuser'  
 
 urlpatterns = [
-    path('profile/<int:pk>/',clubuser_views.profile, name = 'profile'),
+    path('profile/<int:pk>/',profile, name = 'profile'),
     path('signup/',UserCreation.as_view(), name= 'signup'),
-    path('login/', clubuser_views.login, name= 'login'),
-    path('logout/', clubuser_views.logout , name = 'logout'),
-    path('update-profile/<int:pk>/', UserUpdate.as_view(), name = 'update-profile'),
-    # path('login/', LoginView.as_view(), {'template_name': 'login.html'}, name='login'),
-#   path('login/',clubuser_views.login, name = 'login'),
+    path('login/', login, name= 'login'),
+    path('logout/',logout , name = 'logout'),
+    path('update-profile/<int:pk>/', edit_profile, name = 'update-profile'),
+    # path('profile/change-pass/', PasswordChangeView.as_view(template_name = 'registration/change-pass.html'), name= 'change-pass')
+    path('profile/change-pass/', PassChangeView.as_view(), name= 'change-pass'),
+    path('profile/pass-changed/',TemplateView.as_view(template_name = 'clubuser/pass-changed.html'), name = 'pass-changed' )
 ]
 
 

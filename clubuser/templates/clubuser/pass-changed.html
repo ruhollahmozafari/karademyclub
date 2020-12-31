@@ -1,0 +1,9 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+<h1>Your Password Has Changed</h1>
+
+<a href ="{% url 'clubuser:profile' request.user.id %}">Back To Profile</a>
+
+
+
+{% endblock %}
