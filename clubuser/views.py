@@ -11,13 +11,14 @@ from django.views.generic import ListView,DetailView,UpdateView, DeleteView, Cre
 from .forms import *
 from blog import urls
 from blog.views import *
+from django.contrib.auth import login as auth_login
 
 
-def profile(request, id):
-    # you can use this method by having 'user.clubuser.id' in the tample base.html or you can chage the user.clubuser.id to user.id and uncooment the two following lines here
-    user1 = User.objects.get(id = id)
-    main_id = user1.clubuser.id
-    profile = get_object_or_404(ClubUser, pk = main_id )
+def profile(request, pk):
+    # you can use this method by having 'user.clubuser.pk' in the tample base.html or you can chage the user.clubuser.pk to user.pk and uncooment the two following lines here
+    user1 = User.objects.get(id = pk)
+    main_pk = user1.clubuser.id
+    profile = get_object_or_404(ClubUser, pk = main_pk )
     # profile = request.user.get_profile()
     # user = profile
     context = {
@@ -27,7 +28,7 @@ def profile(request, id):
 
 class UserCreation(CreateView):
     def post(self, request):
-        signup_form = SignUpForm(request.POST,)
+        signup_form = SignUpForm(request.POST,request.FILES)
         if signup_form.is_valid():
             new_user = signup_form.save()
             new_user.refresh_from_db()
@@ -36,24 +37,28 @@ class UserCreation(CreateView):
             # new_user.set_password(signup_form.cleaned_data["password"])
             # new_user.club_user.profile_image = signup_form.cleaned_data.get('image')
             interest1 = signup_form.cleaned_data.get('interest')
+            # new_user.save()
+            new_user = authenticate(username=signup_form.cleaned_data.get('username'), password=signup_form.cleaned_data.get('password1'))
             new_user.save()
-            new_user = authenticate(username=new_user.username, password=signup_form.cleaned_data.get('password1'))
             new1 = ClubUser.objects.create(user = new_user,)
             new1.interest.add(interest1)
-            # new_user.user_clubuser.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
+            new1.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
             new1.save()
             # if user is not None: add these later to go to another page
-            login(request, new_user)
+            auth_login(request, new_user)
         return redirect('blog:questions') 
-
+        
     def get(self, request):
         signup_form = SignUpForm()
         return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
 
 class UserUpdate(UpdateView):
     template_name = 'clubuser/update-profile.html'
-    model = ClubUser
-    form_class = UpdateProfileForm
+    model = User
+    fields = [
+        'first_name','last_name', 'email'
+    ]
+    success_url = reverse_lazy('blog:questions')
     # this class will finish later
     # fields = '__all__'
     # def get_object(self, *args, **kwargs):
@@ -77,6 +82,8 @@ def login(request):
             return render (request,'registration/login.html/', {'error':'Username or password is incorrect!'})
     else:
         return render(request,'registration/login.html/')
+
+
 
 def logout(request):
     if request.method == 'POST':

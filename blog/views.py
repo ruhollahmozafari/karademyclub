@@ -48,7 +48,7 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
         self.obj= get_object_or_404(Question, id = self.kwargs['pk'])
         self.object.save()
         self.object.refresh_from_db()
-        answers = Answer.objects.filter (question_id = self.obj.id)
+        answers = Answer.objects.filter (question_id = self.obj.id).order_by('-created_date')
         liked =self.obj.like.filter(id =self.request.user.id).exists()
         print('liked in class question not checked still' *10)
         context["answers"]=answers

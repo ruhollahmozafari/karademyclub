@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views as clubuser_views
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
@@ -11,7 +13,7 @@ from .views import UserCreation,UserUpdate
 app_name='clubuser'  
 
 urlpatterns = [
-    path('profile/<int:id>/',clubuser_views.profile, name = 'profile'),
+    path('profile/<int:pk>/',clubuser_views.profile, name = 'profile'),
     path('signup/',UserCreation.as_view(), name= 'signup'),
     path('login/', clubuser_views.login, name= 'login'),
     path('logout/', clubuser_views.logout , name = 'logout'),
