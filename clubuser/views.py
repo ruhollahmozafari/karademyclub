@@ -7,6 +7,7 @@ from django.contrib.auth.forms import  AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.views import  PasswordChangeView
 from django.http import HttpResponse
 from clubuser.models import ClubUser
+from django.contrib.messages.views import SuccessMessageMixin
 from blog.models import  Category, Question, Answer , Report,Tag
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from .forms import *
@@ -14,11 +15,12 @@ from blog import urls
 from blog.views import *
 from django.contrib.auth import login as auth_login
 
-class PassChangeView(PasswordChangeView):
+class PassChangeView(SuccessMessageMixin, PasswordChangeView):
     form_class = PasswordChangeForm
     template_name = 'registration/change-pass.html'
     # success_url = ('blog:question')
-    success_url= 'blog/questions'
+    success_message = ( f'your pass have chnaged dear user !')
+    success_url= '/questions'
 
 
 def profile(request, pk):
@@ -27,17 +29,11 @@ def profile(request, pk):
     user1 = User.objects.get(id = pk)
     main_pk = user1.clubuser.id
     profile = get_object_or_404(ClubUser, pk = main_pk )
-    
+
     context = {
         "profile":profile
     }
     return render(request, 'clubuser/user_profile.html', context)
-    # u_form = UserUpdateForm(instance = request.user)
-    # c_form = ClubUserUpdateForm(instance= request.user.clubuser)
-    # context["u_form"] = "u_form"
-    # context["c_form"] = "c_form"
-    
-    # return render(request, 'clubuser/user_profile.html', context)
 
 class UserCreation(CreateView):
     def post(self, request,*args, **kwargs):
@@ -45,19 +41,13 @@ class UserCreation(CreateView):
         if signup_form.is_valid():
             new_user = signup_form.save()
             new_user.refresh_from_db()
-            # new_user.interest = signup_form.cleaned_data.get('interest')
-            # new_user.profile_image  = signup_form.cleaned_data.get('image')
-            # new_user.set_password(signup_form.cleaned_data["password"])
-            # new_user.club_user.profile_image = signup_form.cleaned_data.get('image')
             interest1 = signup_form.cleaned_data.get('interest')
-            # new_user.save()
             new_user = authenticate(username=signup_form.cleaned_data.get('username'), password=signup_form.cleaned_data.get('password1'))
             new_user.save()
             new1 = ClubUser.objects.create(user = new_user)
             new1.interest.add(interest1)
             new1.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
             new1.save()
-            # if user is not None: add these later to go to another page
             auth_login(request, new_user)
         return redirect('blog:questions') 
         
@@ -65,26 +55,6 @@ class UserCreation(CreateView):
         signup_form = SignUpForm()
         return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
 
-class UserUpdate(UpdateView):
-    template_name = 'clubuser/update-profile.html'
-    model = User
-    fields = [
-        'first_name','last_name', 'email'
-    ]
-    success_url = reverse_lazy('blog:questions')
-    
-    # this class will finish later
-    # fields = '__all__'
-    # def get_object(self, *args, **kwargs):
-    #     user = get_object_or_404(User, pk=self.kwargs['pk'])
-    #     user.first_name = self.kwargs['first_name']
-    #     user.last_name = self.kwargs['last_name']
-    #     user.email = self.kwargs['email']
-
-    #     return user.clubuser
-
-    # def get_success_url(self, *args, **kwargs):
-    #     return reverse_lazy('blog:home')
 @login_required
 def edit_profile(request,*args, **kwargs):
     temp = ClubUser.objects.get(id = kwargs['pk'])
@@ -106,13 +76,8 @@ def edit_profile(request,*args, **kwargs):
         u_form = UserUpdateForm(instance=request.user)
         c_form = ClubUserUpdateForm(instance=request.user.clubuser)
 
-    context = {
-        'u_form': u_form,
-        'c_form': c_form
-    }
-
+    context = {'u_form': u_form,'c_form': c_form}
     return render(request, 'clubuser/update-profile.html', context)
-
 
 def login(request):
     if request.method == 'POST':

@@ -2,12 +2,14 @@
 {% load hitcount_tags %}
 
 {% block content %}
-
+           
 <div class ="d-flex">
+
     <div class="card" style="width: 100rem; height: 15rem">
         <h5 class="card-header">  
+
                   {% for tag in question.tag.all %} 
-          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a>
+          {% comment %} <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a> {% endcomment %}
                   {% endfor%}
               <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
          {{question.user.username}}

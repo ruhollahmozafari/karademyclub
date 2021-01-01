@@ -1,5 +1,11 @@
 {% extends 'layouts/base.html' %}
-
+ {% if messages %}
+     {% for message in messages %}
+         <div class="text-center alert alert-{{ message.tags }}">
+             {{ message|safe }}
+         </div>
+     {% endfor %}
+ {% endif %}
 {% block content %}
 
 <h1 class="text-center"> Hello this is a Q&A website</h1>

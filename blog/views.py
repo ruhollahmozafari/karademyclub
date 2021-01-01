@@ -123,7 +123,7 @@ class QuestionCreate(CreateView):
             tag_list = tag_list.split()
             for item in tag_list:
                 if Tag.objects.filter(title = item).exists():
-                    temp_tag = Tag.object.filter(title = item).exists
+                    temp_tag = Tag.objects.filter(title = item).exists
                     question.tag.add(temp_tag.id)
                 else : 
                     temp_tag = Tag(title = item)
