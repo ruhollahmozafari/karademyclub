@@ -27,5 +27,5 @@ urlpatterns = [
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),
     path('all-reports/', ListReport.as_view(), name = 'all-reports'),
     path('create-report/<str:app>/<str:model>/<int:pk>/', CreateReport.as_view(), name = 'create-report'),
-
+    path('question-comment/<int:pk>/', QuestionComment, name = 'question-comment'),
 ]

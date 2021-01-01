@@ -81,7 +81,7 @@ class Question(models.Model):
 class Answer(models.Model):
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE, related_name= 'anwers_of_question')
     user = models.ForeignKey(User ,default= None ,null =True, on_delete=models.CASCADE)
-    body = body = models.TextField()
+    body = body = RichTextField()
     published = models.BooleanField(default=True, )
     created_date = models.DateTimeField(auto_now_add= True,)
     updated_date = models.DateTimeField(auto_now= True)
@@ -98,7 +98,6 @@ class Answer(models.Model):
 
 
 class Report(models.Model):
-    pass
     REPORT_REASONS = (
         ("not related to programing" ,"not related to programing"),
         ("insulting","insulting"),
@@ -118,11 +117,12 @@ class Report(models.Model):
     def __str__(self):
         return str(self.content_object)
     
-
-
-
-
-
-    
+class QuestionComment(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    created_date = models.DateTimeField(auto_now_add= True)
+    body = models.CharField(max_length=200, null= True , blank = True, default ='')
+    def __str__(self):
+        return str(self.body)
 
 

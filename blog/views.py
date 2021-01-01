@@ -7,7 +7,7 @@ from blog.models import  Answer, Tag , Category, Question, Report
 from django.contrib import messages 
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
-from .forms import Ask ,AnswerForm
+from .forms import *
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
@@ -15,6 +15,26 @@ from hitcount.views import HitCountDetailView
 from django.contrib.contenttypes.models import ContentType
 from clubuser.models import ClubUser
 from django.contrib.auth.models import User
+
+def QuestionComment(request, *args, **kwargs):
+    print('1'*100)
+    c_form = QuestionCommentForm()
+    if request.method == 'Post':
+        print('2'*100)
+        c_form = QuestionCommentForm(request.Post)
+        if c_form.is_valid():        
+            new_comment = c_form.save(commit=False)
+            new_comment.refresh_from_db()
+            print('3'*100)
+            new_comment.user = request.user
+            new_comment.question = c_form.cleaned_data.get('question_id')
+            new_comment.bldy =c_form.cleaned_data.get('body')
+            print('4'*100)
+    context['c_form'] = c_form
+    return render(request, 'blog/question.html',context)
+
+
+
 
 @login_required    #at first we userd two different functions handle for like for question and answer specifically but then we used one funstions to handle both of them  
 def LikeCreate(request, *args, **kwargs):
@@ -39,11 +59,12 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
     model = Question
     context_object_name = 'question'
     count_hit = True
-
     def get_queryset(self):
         return Question.objects.filter(id = self.kwargs['pk'])
-
+    
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_form = QuestionCommentForm()
         context = super(QuestionDetail,self).get_context_data(**kwargs)
         self.obj= get_object_or_404(Question, id = self.kwargs['pk'])
         self.object.save()
@@ -53,7 +74,27 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
         print('liked in class question not checked still' *10)
         context["answers"]=answers
         context["liked "] = liked
+        context['c_form'] = c_form
         return context
+    def post(request, *args, **kwargs):
+        print('1'*100)
+        c_form = QuestionCommentForm()
+        if request.method=='POST':
+            print('2'*100)
+            c_form = QuestionCommentForm(request.POST)
+            if c_form.is_valid():        
+                new_comment = c_form.save(commit=False)
+                new_comment.refresh_from_db()
+                print('3'*100)
+                new_comment.user = request.user
+                new_comment.question = c_form.cleaned_data.get('question_id')
+                new_comment.bldy =c_form.cleaned_data.get('body')
+                print('4'*100)
+                context['c_form'] = c_form
+        else:
+            c_form= QuestionCommentForm()
+        return render(request, 'blog/question.html',context)
+        
 
 class AllCategories(ListView):
     model = Category

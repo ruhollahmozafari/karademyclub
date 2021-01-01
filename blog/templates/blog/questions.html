@@ -3,13 +3,11 @@
 
 {% block content %}
 
-<div class ="d-flex">
     {% for question in object_list %}
     
+<div class ="d-flex">
 
-        <div class="col-md-4">
-            <div class="card"
-                 style="width: 20rem; height: 15rem" >
+    <div class="card" style="width: 100rem; height: 15rem">
                 <div class="card-body">
                   <h5 class="card-title">{{ question.title}}</h5>
                   <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
@@ -25,6 +23,10 @@
 
     {%endfor%}
 </div>
-
+<form method="POST" action ="{% url 'blog:question-comment' %}" >{% csrf_token %}
+    {{form.media}}
+    {{ comment_form.as_p}}
+    <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-success btn-sm">submit comment</button>
+</form>
 {% endblock %}
 

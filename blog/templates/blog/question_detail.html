@@ -1,15 +1,15 @@
 {% extends 'layouts/base.html' %}
 {% load hitcount_tags %}
-
+{% load crispy_forms_tags %}
 {% block content %}
            
 <div class ="d-flex">
 
-    <div class="card" style="width: 100rem; height: 15rem">
-        <h5 class="card-header">  
+    <div class="card" style="width: 69.5rem; height: 15rem">
 
+        <h5 class="card-header">  
                   {% for tag in question.tag.all %} 
-          {% comment %} <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{tag}}</a> {% endcomment %}
+          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-Success btn-sm" role="button" aria-pressed="true">[ {{tag}} ]</a>
                   {% endfor%}
               <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
          {{question.user.username}}
@@ -42,6 +42,8 @@
            {% endif %}
         </div>
     </div>
+              
+
 </div>
     <br/><be>
           <hr>
@@ -85,5 +87,13 @@ there is {{ anwers.count }} answer(s) for this question
           <hr>
           <br/>
 
+          {%if c_form%}
+<form method="POST" action ="{% url 'blog:question-comment' question.pk %}" >{% csrf_token %}
+    {{c_form.media}}
+    {{ c_form.as_p}}
+      <button type = "submit" , name = "question_id", value = "submit", class ="btn btn-secondary btn-sm">submit comment</button>
+</form>
+{% else %}God dam it we dont have the template of comment here go check it body
+ {% endif%} 
 
 {% endblock %}

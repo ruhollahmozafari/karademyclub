@@ -1,5 +1,5 @@
 from django import forms
-from .models import Question, Answer,Report
+from .models import *
 from clubuser.models import ClubUser
 from django.contrib.auth.models import User
 
@@ -24,8 +24,12 @@ class ReportForm(forms.ModelForm):
     
     class Meta:
         model = Report
-        fields = [
-            
-            'reason',
-            'detail',
-        ]
+        fields = ['reason','detail',]
+
+
+class QuestionCommentForm(forms.ModelForm):
+    # body = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Add a comment...'}))
+    class Meta:
+        model = QuestionComment
+        fields = ("body",)
+
