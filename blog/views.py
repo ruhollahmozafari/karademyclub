@@ -91,7 +91,7 @@ class QuestionDetail(DetailView):
         context['c_form'] = c_form
         return context
 
-    # def post(request, *args, **kwargs):
+    # def post(request, *args, **kwargs):# this was for comment section which I used an other function to make it happen
     #     print('post started'*100)
     #     c_form = QuestionCommentForm()
     #     if c_form.is_valid():        
@@ -180,12 +180,14 @@ class QuestionCreate(CreateView):
             tag_list = tag_list.split()
             for item in tag_list:
                 if Tag.objects.filter(title = item).exists():
-                    temp_tag = Tag.objects.filter(title = item).exists
+                    temp_tag = Tag.objects.get(title = item)
                     question.tag.add(temp_tag.id)
+
                 else : 
                     temp_tag = Tag(title = item)
                     temp_tag.save()
-                question.tag.add(temp_tag.id)
+                    temp_tag.refresh_from_db()
+                    question.tag.add(temp_tag.id)
 
             question.save()
             form= Ask()

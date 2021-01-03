@@ -5,7 +5,7 @@
            
 <div class ="d-flex">
 
-    <div class="card" style="width: 69.5rem; height: 15rem">
+    <div class="card" style="width: 69.5rem; height: 17rem">
 
         <h5 class="card-header">  
                   {% for tag in question.tag.all %} 
@@ -51,13 +51,13 @@
         <h4>Comments</h4>
 
                 {% for comment  in comments  %}
-                <div class="card"  style="width: 69.5rem; height: 15rem">
+                <div class="card"  style="width: 69.5rem; height: 9rem">
               <div class="card-body">
                 <h5 class="card-title">{{comment.body}} </h5>
                 <p class="card-text">{{comment.user}}   '{{comment.created_date}}'</p>
 
                 {% if comment.user == user %}
-                      <a href="{% url 'blog:update-comment' comment.pk %}" class="btn btn-primary">update or delete your comment</a>
+                      <a href="{% url 'blog:update-comment' comment.pk %}" class="btn btn-primary  btn-sm">update or delete your comment</a>
                 {% endif %}                
                         <a href="{% url 'blog:create-report' 'blog' 'QuestionComment' comment.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
                </div>
