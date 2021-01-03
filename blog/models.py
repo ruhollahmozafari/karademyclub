@@ -119,7 +119,7 @@ class Report(models.Model):
     
 class QuestionComment(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    question = models.ForeignKey(Question,null= True ,on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add= True)
     body = models.CharField(max_length=200, null= True , blank = True, default ='')
     def __str__(self):

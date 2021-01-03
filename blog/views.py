@@ -10,33 +10,46 @@ from django.contrib.auth import decorators
 from .forms import *
 from clubuser.forms import *
 from django.views import View
-from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
+from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView , TemplateView
 from hitcount.views import HitCountDetailView
 from django.contrib.contenttypes.models import ContentType
 from clubuser.models import ClubUser
 from django.contrib.auth.models import User
+from django.views.generic.edit import FormView
+from rest_framework.decorators import api_view
 
-def QuestionComment(request, *args, **kwargs):
-    print('1'*100)
-    c_form = QuestionCommentForm()
-    if request.method == 'Post':
-        print('2'*100)
-        c_form = QuestionCommentForm(request.Post)
+# class Test(TemplateView):
+#     print('TestView'*20)
+#     template_name= 'blog/test.html'
+
+# @api_view(['POST','GET'])
+def question_comment(request, *args, **kwargs):
+    context ={}
+    if request.method == 'POST':
+        print('4'*20)
+        c_form = QuestionCommentForm(request.POST)
         if c_form.is_valid():        
+            print('5'*20)
             new_comment = c_form.save(commit=False)
-            new_comment.refresh_from_db()
-            print('3'*100)
+            print('6'*20)
+            question1= Question.objects.get(id = request.POST.get('question_id'))
+            new_comment.question = question1
+            print('7'*20)
+            # new_comment.bldy = c_form.cleaned_data.get('body')
             new_comment.user = request.user
-            new_comment.question = c_form.cleaned_data.get('question_id')
-            new_comment.bldy =c_form.cleaned_data.get('body')
-            print('4'*100)
-    context['c_form'] = c_form
-    return render(request, 'blog/question.html',context)
+            print('8'*20)
+            # new_comment.refresh_from_db()
+            new_comment.save()
+    else:
+        context['c_form'] = c_form
+    return HttpResponseRedirect(reverse_lazy('blog:question-detail',args=[question1.id , question1.slug]))
+
+    # return reverse_lazy(request, 'blog/question_detail.html',args=[question.id, questoin.slug],context)
 
 
 
 
-@login_required    #at first we userd two different functions handle for like for question and answer specifically but then we used one funstions to handle both of them  
+@login_required   
 def LikeCreate(request, *args, **kwargs):
     object_type = ContentType.objects.get(app_label= kwargs['app'], model = kwargs['model'],)
     real_object = object_type.get_object_for_this_type(id = kwargs['pk'])
@@ -53,8 +66,7 @@ def LikeCreate(request, *args, **kwargs):
 
     return HttpResponseRedirect(reverse('blog:question-detail',args = [id_to_question , slug_to_question]))
 
-class QuestionDetail(DetailView):# we can use method 1 or 2
-
+class QuestionDetail(DetailView):
     template_name = 'blog/question_detail.html'
     model = Question
     context_object_name = 'question'
@@ -72,28 +84,32 @@ class QuestionDetail(DetailView):# we can use method 1 or 2
         answers = Answer.objects.filter (question_id = self.obj.id).order_by('-created_date')
         liked =self.obj.like.filter(id =self.request.user.id).exists()
         print('liked in class question not checked still' *10)
+        comments= QuestionComment.objects.filter(question = self.kwargs['pk'])
+        context['comments']= comments
         context["answers"]=answers
         context["liked "] = liked
         context['c_form'] = c_form
         return context
-    def post(request, *args, **kwargs):
-        print('1'*100)
-        c_form = QuestionCommentForm()
-        if request.method=='POST':
-            print('2'*100)
-            c_form = QuestionCommentForm(request.POST)
-            if c_form.is_valid():        
-                new_comment = c_form.save(commit=False)
-                new_comment.refresh_from_db()
-                print('3'*100)
-                new_comment.user = request.user
-                new_comment.question = c_form.cleaned_data.get('question_id')
-                new_comment.bldy =c_form.cleaned_data.get('body')
-                print('4'*100)
-                context['c_form'] = c_form
-        else:
-            c_form= QuestionCommentForm()
-        return render(request, 'blog/question.html',context)
+
+    # def post(request, *args, **kwargs):
+    #     print('post started'*100)
+    #     c_form = QuestionCommentForm()
+    #     if c_form.is_valid():        
+    #         new_comment = c_form.save(commit=False)
+    #         new_comment.refresh_from_db()
+    #         new_comment.user = request.user
+    #         new_comment.question = c_form.cleaned_data.get('question_id')
+    #         new_comment.bldy =c_form.cleaned_data.get('body')
+    #         new_comment.save()
+    #         context= {
+    #             "c_form":c_form
+    #         }
+    #     else:
+    #         c_form= QuestionCommentForm()
+    #         context= {
+    #             "c_form":c_form
+    #         }
+    #     return render(request, 'blog/question_detail.html',context)
         
 
 class AllCategories(ListView):
@@ -223,6 +239,35 @@ class UpdateAnswer(UpdateView):
     fields = ['body']
     success_url= reverse_lazy('blog:questions')
 
+class UpdateComment(UpdateView):
+    model=QuestionComment
+    template_name ='blog/update-comment.html'
+    fields = ['body']
+    success_url = reverse_lazy('blog:questions')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comment = QuestionComment.objects.get(id = self.kwargs['pk'])
+        question = comment.question
+        # question = Question.objects.get(id = comment.quesiton.id)
+        context["question"] = question
+        context["comment"] =comment 
+        return context
+        
+
+class DeleteComment(DeleteView):
+    model = QuestionComment
+    template_name = 'blog/delete-comment.html'
+    success_url = reverse_lazy('blog:questions')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comment = QuestionComment.objects.get(id = self.kwargs['pk'])
+        question = comment.question
+        context["comment"] =comment 
+        context["question"] = question
+        return context
+    
+
+
 
 @method_decorator(login_required, name = 'dispatch')
 class ListReport(ListView):
@@ -254,6 +299,7 @@ class CreateReport(CreateView):
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
+
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV

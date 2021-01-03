@@ -23,10 +23,6 @@
 
     {%endfor%}
 </div>
-<form method="POST" action ="{% url 'blog:question-comment' %}" >{% csrf_token %}
-    {{form.media}}
-    {{ comment_form.as_p}}
-    <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-success btn-sm">submit comment</button>
-</form>
+
 {% endblock %}
 

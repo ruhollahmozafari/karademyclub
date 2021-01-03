@@ -1,0 +1,28 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div class ="d-flex">
+
+    <div class="card" style="width: 100rem; height: 15rem">
+                <div class="card-body">
+                  <h5 class="card-title">{{ question.title}}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
+                  <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
+                  <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
+                  <p> likes: {{question.like.count}}
+                  
+                </div>
+              </div>
+            </div>
+        <div class="card">
+
+</div>
+
+<form method="post">{% csrf_token %}
+{{form.media}}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+<a href="{% url 'blog:delete-comment' comment.pk %}" role="button" class="btn btn-danger btn-large">delete this comment</a>
+
+{% endblock %}

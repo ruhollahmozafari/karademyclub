@@ -39,12 +39,46 @@
            </form>
            {% else %}
                       <a href="{% url 'clubuser:signup' %}" aria-pressed="true">log in to like</a>
-           {% endif %}
-        </div>
-    </div>
-              
 
+           {% endif %}
 </div>
+
+        </div>
+        </div>
+        <br/><be>
+        <hr>
+        <br/>
+        <h4>Comments</h4>
+
+                {% for comment  in comments  %}
+                <div class="card"  style="width: 69.5rem; height: 15rem">
+              <div class="card-body">
+                <h5 class="card-title">{{comment.body}} </h5>
+                <p class="card-text">{{comment.user}}   '{{comment.created_date}}'</p>
+
+                {% if comment.user == user %}
+                      <a href="{% url 'blog:update-comment' comment.pk %}" class="btn btn-primary">update or delete your comment</a>
+                {% endif %}                
+                        <a href="{% url 'blog:create-report' 'blog' 'QuestionComment' comment.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
+               </div>
+            </div>
+          {% endfor %}
+     
+
+  
+    <br/><be>
+          <hr>
+          <br/>
+
+<form method="POST" action = "{% url 'blog:question-comment' question.id %}">{% csrf_token %}
+    {{c_form.media}}
+
+    {{ c_form.as_p}}
+      <button type = "submit" , name = "question_id", value = "{{question.id}}", class ="btn btn-secondary btn-sm">submit comment</button>
+</form>
+
+
+  
     <br/><be>
           <hr>
           <br/>
@@ -72,28 +106,13 @@ there is {{ anwers.count }} answer(s) for this question
                   {%else%}
               <button type = "submit" , name = "answer_id", value = "{{answer.pk}}", class ="btn btn-success btn-sm">vote up</button>
                   {% endif %}
-           <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">likes : {{answer.like.count}}</a>
-
-
-
-<a href="{% url 'blog:create-report' 'blog' 'Answer' answer.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
-
+                  <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">likes : {{answer.like.count}}</a>
+                  <a href="{% url 'blog:create-report' 'blog' 'Answer' answer.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
+                  </form>
 
 
       </div>
     </div>
 {%endfor%}
-    <br/><be>
-          <hr>
-          <br/>
-
-          {%if c_form%}
-<form method="POST" action ="{% url 'blog:question-comment' question.pk %}" >{% csrf_token %}
-    {{c_form.media}}
-    {{ c_form.as_p}}
-      <button type = "submit" , name = "question_id", value = "submit", class ="btn btn-secondary btn-sm">submit comment</button>
-</form>
-{% else %}God dam it we dont have the template of comment here go check it body
- {% endif%} 
-
 {% endblock %}
+

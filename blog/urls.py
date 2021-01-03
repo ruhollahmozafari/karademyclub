@@ -1,8 +1,7 @@
 from django.urls import path
 from django.urls import reverse
 from .models import *
-from . import views as blog_views
-from blog.views import DeleteAnswer, CreateReport, CreateReport ,ListReport, UpdateAnswer , QuestionDetail, AllCategories,QuestionsInCategories,QuestionUpdate,QuestionDelete, QuestionCreate, LikeCreate, QuestionsInTags,AllTags,WriteAnswer
+from blog.views import *
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic import TemplateView
 from . import api_views
@@ -27,5 +26,9 @@ urlpatterns = [
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),
     path('all-reports/', ListReport.as_view(), name = 'all-reports'),
     path('create-report/<str:app>/<str:model>/<int:pk>/', CreateReport.as_view(), name = 'create-report'),
-    path('question-comment/<int:pk>/', QuestionComment, name = 'question-comment'),
+    path('question-comment/<int:pk>/', question_comment, name = 'question-comment'),
+    path('delete-comment/<int:pk>/', DeleteComment.as_view(), name = 'delete-comment'),
+    path('update-comment/<int:pk>/', UpdateComment.as_view(), name = 'update-comment'),
+
 ]
+ 
