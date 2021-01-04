@@ -17,6 +17,10 @@ from clubuser.models import ClubUser
 from django.contrib.auth.models import User
 from django.views.generic.edit import FormView
 from rest_framework.decorators import api_view
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 
 # class Test(TemplateView):
 #     print('TestView'*20)
@@ -91,26 +95,7 @@ class QuestionDetail(DetailView):
         context['c_form'] = c_form
         return context
 
-    # def post(request, *args, **kwargs):# this was for comment section which I used an other function to make it happen
-    #     print('post started'*100)
-    #     c_form = QuestionCommentForm()
-    #     if c_form.is_valid():        
-    #         new_comment = c_form.save(commit=False)
-    #         new_comment.refresh_from_db()
-    #         new_comment.user = request.user
-    #         new_comment.question = c_form.cleaned_data.get('question_id')
-    #         new_comment.bldy =c_form.cleaned_data.get('body')
-    #         new_comment.save()
-    #         context= {
-    #             "c_form":c_form
-    #         }
-    #     else:
-    #         c_form= QuestionCommentForm()
-    #         context= {
-    #             "c_form":c_form
-    #         }
-    #     return render(request, 'blog/question_detail.html',context)
-        
+
 
 class AllCategories(ListView):
     model = Category
@@ -182,7 +167,6 @@ class QuestionCreate(CreateView):
                 if Tag.objects.filter(title = item).exists():
                     temp_tag = Tag.objects.get(title = item)
                     question.tag.add(temp_tag.id)
-
                 else : 
                     temp_tag = Tag(title = item)
                     temp_tag.save()
@@ -269,8 +253,6 @@ class DeleteComment(DeleteView):
         return context
     
 
-
-
 @method_decorator(login_required, name = 'dispatch')
 class ListReport(ListView):
     model = Report
@@ -298,14 +280,42 @@ class CreateReport(CreateView):
             report.detail = form.cleaned_data.get('detail')
             report.reason = form.cleaned_data.get('reason')
             report.save()
+            subject = f'Your {report.content_type.model} hase been reported'
+            html_content = render_to_string('blog/report_mail.html', {'report':report})
+            text_content= strip_tags(html_content)
+            recepient = str(report.content_object.user.email)
+            send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
-        return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
-
+        return HttpResponseRedirect(reverse_lazy('blog:all-reports')) 
+        
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV
 # kept it for learning and checking later
+
+
+
+    # def post(request, *args, **kwargs):# this was for comment section in QuestionDetial which I used an other function to make it happen
+    #     print('post started'*100)
+    #     c_form = QuestionCommentForm()
+    #     if c_form.is_valid():        
+    #         new_comment = c_form.save(commit=False)
+    #         new_comment.refresh_from_db()
+    #         new_comment.user = request.user
+    #         new_comment.question = c_form.cleaned_data.get('question_id')
+    #         new_comment.bldy =c_form.cleaned_data.get('body')
+    #         new_comment.save()
+    #         context= {
+    #             "c_form":c_form
+    #         }
+    #     else:
+    #         c_form= QuestionCommentForm()
+    #         context= {
+    #             "c_form":c_form
+    #         }
+    #     return render(request, 'blog/question_detail.html',context)
+        
 
 
 # def ask(request):# this is gonna be a pop up rather than a single page

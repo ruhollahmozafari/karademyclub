@@ -45,15 +45,11 @@ class Tag(models.Model):
 
 @python_2_unicode_compatible
 class Question(models.Model):
-    PUBLISH_STATUS = (
-    ('draft', 'draft'),
-    ('publish', 'publish')
-    ) 
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     body = RichTextField(blank= True , null=True)
-    status = models.CharField(max_length=15, choices=PUBLISH_STATUS, default='publish')
+    published = models.BooleanField(default=True, )
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
     like= models.ManyToManyField(User,related_name= 'like_question')
@@ -124,5 +120,6 @@ class QuestionComment(models.Model):
     body = models.CharField(max_length=200, null= True , blank = True, default ='')
     def __str__(self):
         return str(self.body)
+
 
 

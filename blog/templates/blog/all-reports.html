@@ -12,7 +12,7 @@
     <p class="card-text">{{report.detail|truncatewords:5|safe}}</p>
     <p class="btn btn-primary"> {{report.content_object}}</p>
       <p = "#" class="card-footer text-muted">
-      {{report.content_object.body}}
+      {{report.content_object.body|safe}}
   </p>
 </div>
 {%endfor%}

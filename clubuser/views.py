@@ -14,6 +14,9 @@ from .forms import *
 from blog import urls
 from blog.views import *
 from django.contrib.auth import login as auth_login
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 class PassChangeView(SuccessMessageMixin, PasswordChangeView):
     form_class = PasswordChangeForm
@@ -48,6 +51,10 @@ class UserCreation(CreateView):
             new1.interest.add(interest1)
             new1.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
             new1.save()
+            subject = f'Welcome to karademy dear {new_user.first_name},'
+            message = f'You can improve your skill and knowledge in this community, It is a honnor to have you here.' 
+            recepient = str(new_user.email)
+            send_mail(subject, message, 'ruhytest@gmail.com', [recepient], fail_silently = True)
             auth_login(request, new_user)
         return redirect('blog:questions') 
         
