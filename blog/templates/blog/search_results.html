@@ -1,0 +1,50 @@
+{% extends 'layouts/base.html' %}
+{% load hitcount_tags %}
+
+{% block content %}
+
+    {% for question in object_list %}
+    
+<div class ="d-flex">
+
+    <div class="card" style="width: 100rem; height: 15rem">
+                <div class="card-body">
+                  <h5 class="card-title">{{ question.title}}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
+                  <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
+                  <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
+                  <p >  Views: {% get_hit_count for question%} </p>
+                  <p> likes: {{question.like.count}}
+                  
+                </div>
+              </div>
+            </div>
+
+ {%endfor%}
+ {% if is_tag %}
+<h3>Results In Tags: [{{ main_tag }}]</h3>
+
+{% for question in  questions_in_tags %}
+<div class ="d-flex">
+    <div class="card" style="width: 100rem; height: 15rem">
+                <div class="card-body">
+                  <h5 class="card-title">{{ question.title}}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
+                  <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
+                  <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
+                  <p >  Views: {% get_hit_count for question%} </p>
+                  <p> likes: {{question.like.count}}
+
+                </div>
+                
+              </div>
+            </div>
+
+    <br/><be>
+          <hr>
+          <br/>
+          
+{% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -29,6 +29,7 @@ urlpatterns = [
     path('question-comment/<int:pk>/', question_comment, name = 'question-comment'),
     path('delete-comment/<int:pk>/', DeleteComment.as_view(), name = 'delete-comment'),
     path('update-comment/<int:pk>/', UpdateComment.as_view(), name = 'update-comment'),
-    
+    path('search-question/', QuestionResultsView.as_view() , name = 'search-results'),
+
 ]
  

@@ -22,11 +22,36 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 
-# class Test(TemplateView):
-#     print('TestView'*20)
-#     template_name= 'blog/test.html'
+class QuestionResultsView(ListView):
+    model = Question
+    template_name = 'blog/search_results.html'
+    def get_queryset(self):
+        self.keyword = self.request.GET.get('keywords')
+        object_list = Question.objects.filter(title__icontains=self.keyword)
+        return object_list
 
-# @api_view(['POST','GET'])
+    def get_context_data(self, **kwargs):
+        context = super(QuestionResultsView,self).get_context_data(**kwargs)
+        try:
+            tag = Tag.objects.get(title = self.keyword)
+        except:
+            tag = None
+        if tag != None:
+            try:
+                questions_in_tags = Question.objects.filter(tag = tag)
+            except:
+                questions_in_tags = None
+        else :
+            questions_in_tags = None
+        if questions_in_tags != None :
+            context["questions_in_tags"] = questions_in_tags
+            context["main_tag"]= tag
+            context["is_tag"] = True
+        return context
+
+
+
+
 def question_comment(request, *args, **kwargs):
     context ={}
     if request.method == 'POST':
