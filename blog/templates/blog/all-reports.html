@@ -9,7 +9,7 @@
   </div>
   <div class="card-body">
     <h5 class="card-title">{{report.reason}} </h5>
-    <p class="card-text">{{report.detail|truncatewords:5|safe}}</p>
+    <p class="card-text">{{report.detail|truncatewords:25|safe}}</p>
     <p class="btn btn-primary"> {{report.content_object}}</p>
       <p = "#" class="card-footer text-muted">
       {{report.content_object.body|safe}}

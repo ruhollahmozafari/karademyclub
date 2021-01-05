@@ -9,12 +9,36 @@ class Ask(forms.ModelForm):
         model = Question
         fields = ('title', 'body', 'category')
 
-class UpdateQuestion(forms.ModelForm):
+
+class UpdateQuestionForm(forms.ModelForm):
     tag_char = forms.CharField(max_length= 100,  required = False)
 
     class Meta :
         model =Question
-        fields = ('title', 'body', 'category',)
+        # init_tags = Tag.objects.filter(question = self)
+
+        fields = ('title', 'body', 'category', 'tag_char')
+
+        widgets = {
+            'tag_char' : forms.TextInput(attrs={
+                'cols': 20, 'rows': 30,
+                'class': 'form-control',
+                'placeholder': 'rewrite your tags here '
+            }),
+        }
+
+
+
+
+    # def __init__(self, data, **kwargs):
+    #     initial = kwargs.get('initial', {})
+    #     if data is None:
+    #         data = {}
+    #     else:
+    #         data = {**initial, **data}
+    #     super().__init__(data, **kwargs)
+
+
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
@@ -25,6 +49,14 @@ class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
         fields = ['reason','detail',]
+        widgets = {
+            'detail' : forms.TextInput(attrs={
+                'cols': 20, 'rows': 30,
+                'class': 'form-control',
+                'placeholder': 'give us more detail for report reason '
+            }),
+        }
+
 
 
 class QuestionCommentForm(forms.ModelForm):
@@ -32,4 +64,10 @@ class QuestionCommentForm(forms.ModelForm):
     class Meta:
         model = QuestionComment
         fields = ("body",)
-
+        widgets = {
+            'body' : forms.TextInput(attrs={
+                'cols': 20, 'rows': 30,
+                'class': 'form-control',
+                'placeholder': 'write your comment for this answer here'
+            }),
+        }

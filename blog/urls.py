@@ -16,7 +16,7 @@ urlpatterns = [
     path('all-categories/', AllCategories.as_view() , name= 'all-categories'), # it is not neccesary because it will be shown on the left or right side of the webpage
     path('all-tags/', AllTags.as_view() , name= 'all-tags'), 
     path('ask/',QuestionCreate.as_view(), name = 'ask'),
-    path('update-question/<int:pk>/', QuestionUpdate.as_view(),name = 'update-question'),
+    path('update-question/<int:pk>/', update_question,name = 'update-question'),
     path('delete-question/<int:pk>/', QuestionDelete.as_view(), name = 'delete-question'),
     path('api/categories/',api_views.category_list),
     path('create-like/<str:app>/<str:model>/<int:pk>/', LikeCreate, name = 'create-like'),

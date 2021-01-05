@@ -4,7 +4,7 @@ from django.urls import reverse ,reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse , HttpResponseRedirect
 from blog.models import  Answer, Tag , Category, Question, Report
-from django.contrib import messages 
+from django.contrib import messages  
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
 from .forms import *
@@ -99,7 +99,14 @@ class QuestionDetail(DetailView):
     template_name = 'blog/question_detail.html'
     model = Question
     context_object_name = 'question'
-    count_hit = True
+    def get_client_ip(self, request):
+        x_forwarded_for =request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+        
     def get_queryset(self):
         return Question.objects.filter(id = self.kwargs['pk'])
     
@@ -107,6 +114,9 @@ class QuestionDetail(DetailView):
         context = super().get_context_data(**kwargs)
         c_form = QuestionCommentForm()
         context = super(QuestionDetail,self).get_context_data(**kwargs)
+        #adding on view based on ip
+        QuestionViews.objects.get_or_create(IPAddres=self.get_client_ip(self.request), question=self.object)
+
         self.obj= get_object_or_404(Question, id = self.kwargs['pk'])
         self.object.save()
         self.object.refresh_from_db()
@@ -119,6 +129,9 @@ class QuestionDetail(DetailView):
         context["liked "] = liked
         context['c_form'] = c_form
         return context
+        post_details=Post.objects.get(slug=slug)
+
+    
 
 
 
@@ -133,7 +146,7 @@ class QuestionsInCategories(ListView,):
     context_object_name = 'questions'
     
     def get_queryset(self):
-        self.category =get_object_or_404(Category, slug = self.kwargs['slug'])
+        self.category =Category.objects.filter(slug = self.kwargs['slug'])[0]
         return Question.objects.filter(category = self.category)
 
     def get_context_data(self, **kwargs):
@@ -159,12 +172,96 @@ class QuestionsInTags(ListView):
         context["main_tag"]= self.tag
         return context
 
-@method_decorator(login_required, name = 'dispatch')
-class QuestionUpdate(UpdateView):#need to check the user log in and writer match
-        model = Question
-        fields = ['title', 'body', 'category','tag']
-        template_name = 'blog/update_question.html'
-        success_url= reverse_lazy('blog:questions')
+
+def update_question(request, pk ):
+    context ={}
+    instance = Question.objects.get(id = pk)
+    form = UpdateQuestionForm(request.POST)
+    if request.method == "POST" and form.is_valid():
+        print('method post is working' *100)
+        instance.title = form.cleaned_data.get('title')
+        instance.body = form.cleaned_data.get('body')
+        instance.category = form.cleaned_data.get('category')
+        tag_list= form.cleaned_data.get('tag_char')
+        tag_list = tag_list.split()
+        for item in tag_list:
+            if Tag.objects.filter(title = item).exists():
+                temp_tag = Tag.objects.get(title = item)
+                instance.tag.add(temp_tag.id)
+            else : 
+                temp_tag = Tag(title = item)
+                temp_tag.save()
+                temp_tag.refresh_from_db()
+                instance.tag.add(temp_tag.id)    
+                instance.save()
+
+        # return render(request, "blog/update_question.html", context) 
+        return HttpResponseRedirect (reverse_lazy('blog:questions'))
+    if request.method=='GET':
+        tags = instance.tag.all()
+        t_char = f''
+        for tag in tags:
+            t_char += str(tag) 
+            t_char+=' '
+        init_title = instance.title
+        init_body = instance.body
+        init_category = instance.category
+        init_tag = t_char
+        initial_dict = {
+            'title':init_title,
+            'body':init_body,
+            'category':init_category,
+            'tag_char': t_char,
+        }
+        form = UpdateQuestionForm(
+            initial = initial_dict) 
+        context['form']= form 
+        return render(request, "blog/update_question.html", context) 
+
+
+
+
+# @method_decorator(login_required, name = 'dispatch')
+# class QuestionUpdate(FormView):#need to check the user log in and writer match
+#     instance = Question.objects.get(id = self.kwargs['pk'])
+#     model  = Question
+#     form_class = UpdateQuestionForm(instance=instance )
+#     # fields = ['title', 'body', 'category','tag', ]
+#     # initial = {'title':'title', 'body': 'body'}
+#     template_name = 'blog/update_question.html'
+#     success_url= reverse_lazy('blog:questions')
+
+
+
+
+
+
+    # def get_initial(self):
+    #     initial = super(QuestionUpdate, self).get_initial()
+    #     return initial
+    
+    # def get_form_class(self):
+    #     return UpdateQuestion
+    
+    # def form_valid(self, form):
+    #     self.object.groups.clear()
+    #     self.object.groups.add(form.cleaned_data['group'])
+    #     return super(UserProfileUpdateView, self).form_valid(form)
+
+
+
+    # # def form_valid(self,*args, **kwargs):
+    #     # pass
+
+    # # def get_context_data(self, **kwargs):
+    # #     context = super().get_context_data(**kwargs)
+    # #     tags = Tag.objects.filter(question= self.kwargs['pk'])
+    # #     tag_char = f''
+    # #     for item in tags :
+    # #         tag_char += str(item)
+    # #     context["tag_char"] =tag_char 
+    # #     return context
+    
 
 
 @method_decorator(login_required, name = 'dispatch')

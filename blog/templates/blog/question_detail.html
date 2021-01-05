@@ -1,5 +1,4 @@
 {% extends 'layouts/base.html' %}
-{% load hitcount_tags %}
 {% load crispy_forms_tags %}
 {% block content %}
            
@@ -9,7 +8,7 @@
 
         <h5 class="card-header">  
                   {% for tag in question.tag.all %} 
-          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-Success btn-sm" role="button" aria-pressed="true">[ {{tag}} ]</a>
+          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-Success btn-sm" role="button" aria-pressed="true" >[ {{tag}} ]</a>
                   {% endfor%}
               <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
          {{question.user.username}}
@@ -24,7 +23,7 @@
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
       {% endif %}
 <a href="{% url 'blog:create-report' 'blog' 'question' question.pk %}" role="button" class="btn btn-warning btn-sm">report</a>
-          <a role="button" class="btn btn-outline-primary btn-sm" aria-pressed="true">Views: {% get_hit_count for question %} </a>
+          
 
           <br/><be>
           <br/>
@@ -36,9 +35,11 @@
               <button type = "submit" , name = "question_id", value = "{{question.pk}}", class ="btn btn-danger btn-sm">like</button>
            {% endif %}
            <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">number of likes : {{question.like.count}}</a>
+            <a role="button" class="btn btn-outline-primary btn-sm" aria-pressed="true">Views: {{ question.views_count }} </a>
            </form>
            {% else %}
                       <a href="{% url 'clubuser:signup' %}" aria-pressed="true">log in to like</a>
+                     
 
            {% endif %}
 </div>

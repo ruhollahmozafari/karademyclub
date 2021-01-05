@@ -7,9 +7,7 @@ from django.urls import reverse
 from ckeditor.fields import RichTextField
 from django.urls import reverse
 from django.conf import settings
-from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
-from six import python_2_unicode_compatible
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
@@ -43,7 +41,6 @@ class Tag(models.Model):
     def __str__(self):
         return self.title
 
-@python_2_unicode_compatible
 class Question(models.Model):
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
@@ -55,8 +52,12 @@ class Question(models.Model):
     like= models.ManyToManyField(User,related_name= 'like_question')
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
     tag = models.ManyToManyField(Tag, blank= True)
-    hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
     
+    @property
+    def views_count(self):
+        return QuestionViews.objects.filter(question=self).count()
+    
+
 
     class Meta :
         ordering = ['created_date']
@@ -69,9 +70,18 @@ class Question(models.Model):
 
     def __str__(self):
         return self.title
-    # def save(self):
-        # pass
 
+    def get_absolute_url(self):
+        return reverse("blog:question-detail",args=[self.pk , str(self.slug)])
+
+
+        
+class QuestionViews(models.Model):
+    IPAddres= models.GenericIPAddressField(default="45.243.82.169")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{0} in {1} post'.format(self.IPAddres,self.question.title)
 
 
 class Answer(models.Model):
@@ -120,6 +130,5 @@ class QuestionComment(models.Model):
     body = models.CharField(max_length=200, null= True , blank = True, default ='')
     def __str__(self):
         return str(self.body)
-
 
 

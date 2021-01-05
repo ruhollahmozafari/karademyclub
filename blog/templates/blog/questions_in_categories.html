@@ -4,12 +4,14 @@
 
 <div class ="d-flex">
     {% for question in questions %}
-        <div class="col-md-4">
-            <div class="card"
-                 style="width: 20rem; height: 20rem" >
+        
+             
+    <div class="card" style="width: 69.5rem; height: 10rem">
+            <h6 class="card-header">  
                 <div class="card-body">
-                  <h5 class="card-title">{{ question.title }}</h5>
+                  <h class="card-title">{{ question.title }}</h>
                   <h6 class="card-subtitle mb-2 text-muted">{{question.cat}}</h6>
+
                   
                   <p class="card-text">{{ question.body|safe }}</p>
                   <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
