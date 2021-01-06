@@ -2,9 +2,9 @@
 
 {% block content %}
 <h2> {{ main_tag }}</h2>
-<div class ="d-flex">
-    {% for question in questions %}
 
+    {% for question in questions %}
+<div class ="d-flex">
     <div class="card" style="width: 100rem; height: 15rem">
                 <div class="card-body">
                   <h5 class="card-title">{{ question.title }}</h5>
@@ -19,8 +19,8 @@
               </div>
             </div>
         <div class="card">
-
-    {%endfor%}
 </div>
+    {%endfor%}
+
 
 {% endblock %}

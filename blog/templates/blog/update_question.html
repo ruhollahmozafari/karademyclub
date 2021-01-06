@@ -2,11 +2,15 @@
 
 {% block content %}
 
+{% if request.user == question.user or request.user.is_staff %}
+
 <form method="post">{% csrf_token %}
       {{form.media}}
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
 {% comment %} <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a> {% endcomment %}
-
+{% else %}
+<h3>the question is not yours to edit</h3>
+{% endif %}
 {% endblock %}

@@ -1,4 +1,17 @@
+{% extends 'layouts/base.html' %}
+
+
+{% block content %}
+
+{% if request.user == answer.user or request.user.is_staff %}
+
 <form method="post">{% csrf_token %}
     <p>Are you sure you want to delete "{{ object }}"?</p>
     <input type="submit" value="Confirm">
 </form>
+{% else %}
+<h1>sorry the comment is not yours to delete</h1>
+
+{% endif %}
+
+{% endblock content %}

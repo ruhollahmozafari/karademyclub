@@ -1,6 +1,7 @@
 {% extends 'layouts/base.html' %}
-{% block content %}
 
+{% block content %}
+{% if request.user == comment.user or request.user.is_staff %}
 <div class ="d-flex">
 
     <div class="card" style="width: 100rem; height: 15rem">
@@ -18,6 +19,9 @@
     <p>Are you sure you want to delete "{{ object }}"?</p>
     <input class = "button btn-danger" type="submit" value="Confirm">
 </form>
+{% else %}
+<h1>sorry the comment is not yours to delete</h1>
 
+{% endif %}
 
 {% endblock %}

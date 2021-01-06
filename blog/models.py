@@ -41,6 +41,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.title
 
+
 class Question(models.Model):
     title = models.CharField(max_length=1000,  )
     slug = models.SlugField(blank= True , null=True, default='')
@@ -53,6 +54,7 @@ class Question(models.Model):
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
     tag = models.ManyToManyField(Tag, blank= True)
     
+
     @property
     def views_count(self):
         return QuestionViews.objects.filter(question=self).count()
@@ -74,8 +76,7 @@ class Question(models.Model):
     def get_absolute_url(self):
         return reverse("blog:question-detail",args=[self.pk , str(self.slug)])
 
-
-        
+     
 class QuestionViews(models.Model):
     IPAddres= models.GenericIPAddressField(default="45.243.82.169")
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -101,6 +102,8 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.body
+    def get_absolute_url(self):
+        return reverse("blog:question-detail",args=[self.question_id.pk , str(self.question_id.slug)])
 
 
 class Report(models.Model):
@@ -122,7 +125,10 @@ class Report(models.Model):
 
     def __str__(self):
         return str(self.content_object)
+
+        
     
+
 class QuestionComment(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     question = models.ForeignKey(Question,null= True ,on_delete=models.CASCADE)
@@ -130,5 +136,7 @@ class QuestionComment(models.Model):
     body = models.CharField(max_length=200, null= True , blank = True, default ='')
     def __str__(self):
         return str(self.body)
+    def get_absolute_url(self):
+        return reverse("blog:question-detail",args=[self.question.pk , str(self.question.slug)])
 
 

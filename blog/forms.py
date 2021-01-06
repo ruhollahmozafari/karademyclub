@@ -4,11 +4,18 @@ from clubuser.models import ClubUser
 from django.contrib.auth.models import User
 
 class Ask(forms.ModelForm):
-    tag_char = forms.CharField(max_length= 100,  required = False)
+    tag_char = forms.CharField(max_length= 100,  required = False, widget=forms.Textarea(attrs={'cols': 30, 'rows': 3}))
+
     class Meta:
         model = Question
         fields = ('title', 'body', 'category')
-
+        widgets = {
+            'title' : forms.TextInput(attrs={
+                'cols': 10, 'rows': 10,
+                'class': 'form-control',
+                'placeholder': 'rewrite your tags here '
+            }),
+        }
 
 class UpdateQuestionForm(forms.ModelForm):
     tag_char = forms.CharField(max_length= 100,  required = False)
@@ -26,18 +33,6 @@ class UpdateQuestionForm(forms.ModelForm):
                 'placeholder': 'rewrite your tags here '
             }),
         }
-
-
-
-
-    # def __init__(self, data, **kwargs):
-    #     initial = kwargs.get('initial', {})
-    #     if data is None:
-    #         data = {}
-    #     else:
-    #         data = {**initial, **data}
-    #     super().__init__(data, **kwargs)
-
 
 class AnswerForm(forms.ModelForm):
     class Meta:
@@ -57,8 +52,6 @@ class ReportForm(forms.ModelForm):
             }),
         }
 
-
-
 class QuestionCommentForm(forms.ModelForm):
     # body = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Add a comment...'}))
     class Meta:
@@ -71,3 +64,19 @@ class QuestionCommentForm(forms.ModelForm):
                 'placeholder': 'write your comment for this answer here'
             }),
         }
+
+class UpdateCommentFrom(forms.ModelForm):
+    
+    class Meta:
+        model = QuestionComment
+        fields = ("body",)
+        widgets = {
+            'body' : forms.TextInput(attrs={
+                'cols': 20, 'rows': 30,
+                'class': 'form-control',
+                'placeholder': 'write your comment for this answer here'
+            }),
+        }
+
+
+

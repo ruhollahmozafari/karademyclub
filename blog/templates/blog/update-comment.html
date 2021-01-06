@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
-
 {% block content %}
+{% if request.user == comment.user or request.user.is_staff %}
 <div class ="d-flex">
 
     <div class="card" style="width: 100rem; height: 15rem">
@@ -21,6 +21,15 @@
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
+
 <a href="{% url 'blog:delete-comment' comment.pk %}" role="button" class="btn btn-danger btn-large">delete this comment</a>
 
+{% else %}
+<h3> this is not your comment to update</h3>
+
+{% endif %}
+
+
+
 {% endblock %}
+

@@ -44,7 +44,14 @@
           <li class="nav-item">
             <a class="nav-link" href= "{% url 'blog:questions' %}" >Questions</a>
           </li>
+        </li> 
+          {% if request.user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link" href= "{% url 'blog:all-reports' %}" >Report</a>
+          </li>
         </li>
+          {% endif %}
+
         <li class="nav-item">
           <a class="nav-link" href="{% url 'blog:all-categories' %}">Categories</a>
         </li>

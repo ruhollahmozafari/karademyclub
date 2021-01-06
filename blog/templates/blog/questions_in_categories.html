@@ -1,11 +1,14 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
+<h2>{{questions.last.category}}</h2>
 
-<div class ="d-flex">
+
+
+
     {% for question in questions %}
         
-             
+             <div class ="d-flex">
     <div class="card" style="width: 69.5rem; height: 10rem">
             <h6 class="card-header">  
                 <div class="card-body">
@@ -20,8 +23,8 @@
             </div>
         <div class="card">
 
-    {%endfor%}
 </div>
 
+    {%endfor%}
 {% endblock %}
 

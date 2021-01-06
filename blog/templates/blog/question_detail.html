@@ -1,7 +1,8 @@
 {% extends 'layouts/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
-           
+
 <div class ="d-flex">
 
     <div class="card" style="width: 69.5rem; height: 17rem">
@@ -11,8 +12,15 @@
           <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-Success btn-sm" role="button" aria-pressed="true" >[ {{tag}} ]</a>
                   {% endfor%}
               <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
-         {{question.user.username}}
-  
+       <a href="{% url 'clubuser:profile' question.user.pk %}"role="button" aria-pressed="true">{{question.user.username}}
+       {% if question.user.clubuser.image_url %}                    
+                  <img src="{{ question.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
+                {% else %}
+                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
+
+                  {% endif %}</a>
+
+
         </h5>
         <div class="card-body">
           <h5 class="card-title">{{question.title}}</h5>
@@ -23,7 +31,8 @@
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
       {% endif %}
 <a href="{% url 'blog:create-report' 'blog' 'question' question.pk %}" role="button" class="btn btn-warning btn-sm">report</a>
-          
+  
+
 
           <br/><be>
           <br/>
@@ -52,18 +61,19 @@
         <h4>Comments</h4>
 
                 {% for comment  in comments  %}
-                <div class="card"  style="width: 69.5rem; height: 9rem">
+                <div class="card"  style="width: 69.5rem; height: 7rem">
               <div class="card-body">
                 <h5 class="card-title">{{comment.body}} </h5>
-                <p class="card-text">{{comment.user}}   '{{comment.created_date}}'</p>
+                  <a href="{% url 'clubuser:profile' comment.user.pk %}"role="button" aria-pressed="true">{{comment.user}}</a>{{comment.created_date}}
 
-                {% if comment.user == user %}
+                {% if comment.user == user or request.user.is_staff %}
                       <a href="{% url 'blog:update-comment' comment.pk %}" class="btn btn-primary  btn-sm">update or delete your comment</a>
                 {% endif %}                
                         <a href="{% url 'blog:create-report' 'blog' 'QuestionComment' comment.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
                </div>
             </div>
           {% endfor %}
+          
      
 
   
@@ -92,8 +102,15 @@ there is {{ anwers.count }} answer(s) for this question
   {% for answer in answers%}
     <div class="card" style="width: 69.5rem; height: 15rem">
       <div class="card-body">
-        <h5 class="card-title">{{answer.user}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{answer.created_date}}</h6>
+  
+   <a href="{% url 'clubuser:profile' answer.user.pk %}"role="button" aria-pressed="true"> {{answer.user}} 
+         {% if answer.user.clubuser.image_url %}                    
+                  <img src="{{ answer.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
+                {% else %}
+                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
+                  {% endif %}</a>
+   </a>
+
         <p class="card-text">{{answer.body|safe}}</p>
 {% if user == answer.user %}
         <a href="{% url 'blog:update-answer' answer.pk %}" role="button" class="btn btn-success btn-sm">edit the answer</a>
@@ -101,13 +118,15 @@ there is {{ anwers.count }} answer(s) for this question
       {% endif %}
           <br/><be>
           <br/>
-           <form action = "{% url 'blog:create-like' 'blog' 'answer' answer.pk %}" method="POST">{% csrf_token %}
+          
+           <form action = "{% url 'blog:create-like' 'blog' 'answer' answer.pk %}" method="POST">{% csrf_token %}{{answer.created_date}}
                   {% if user in  answer.like.all %}
               <button type = "submit" , name = "answer_id", value = "{{answer.pk}}", class ="btn btn-danger btn-sm">vote down</button>
                   {%else%}
               <button type = "submit" , name = "answer_id", value = "{{answer.pk}}", class ="btn btn-success btn-sm">vote up</button>
                   {% endif %}
-                  <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">likes : {{answer.like.count}}</a>
+                  <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">likes : {{answer.like.count}} </a>
+                  
                   <a href="{% url 'blog:create-report' 'blog' 'Answer' answer.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
                   </form>
 

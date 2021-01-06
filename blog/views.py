@@ -22,7 +22,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 
-class QuestionResultsView(ListView):
+class SearchResultView(ListView):
     model = Question
     template_name = 'blog/search_results.html'
     def get_queryset(self):
@@ -31,7 +31,7 @@ class QuestionResultsView(ListView):
         return object_list
 
     def get_context_data(self, **kwargs):
-        context = super(QuestionResultsView,self).get_context_data(**kwargs)
+        context = super(SearchResultView,self).get_context_data(**kwargs)
         try:
             tag = Tag.objects.get(title = self.keyword)
         except:
@@ -49,34 +49,20 @@ class QuestionResultsView(ListView):
             context["is_tag"] = True
         return context
 
-
-
-
+@login_required
 def question_comment(request, *args, **kwargs):
     context ={}
     if request.method == 'POST':
-        print('4'*20)
         c_form = QuestionCommentForm(request.POST)
         if c_form.is_valid():        
-            print('5'*20)
             new_comment = c_form.save(commit=False)
-            print('6'*20)
             question1= Question.objects.get(id = request.POST.get('question_id'))
             new_comment.question = question1
-            print('7'*20)
-            # new_comment.bldy = c_form.cleaned_data.get('body')
             new_comment.user = request.user
-            print('8'*20)
-            # new_comment.refresh_from_db()
             new_comment.save()
     else:
         context['c_form'] = c_form
     return HttpResponseRedirect(reverse_lazy('blog:question-detail',args=[question1.id , question1.slug]))
-
-    # return reverse_lazy(request, 'blog/question_detail.html',args=[question.id, questoin.slug],context)
-
-
-
 
 @login_required   
 def LikeCreate(request, *args, **kwargs):
@@ -122,7 +108,6 @@ class QuestionDetail(DetailView):
         self.object.refresh_from_db()
         answers = Answer.objects.filter (question_id = self.obj.id).order_by('-created_date')
         liked =self.obj.like.filter(id =self.request.user.id).exists()
-        print('liked in class question not checked still' *10)
         comments= QuestionComment.objects.filter(question = self.kwargs['pk'])
         context['comments']= comments
         context["answers"]=answers
@@ -131,14 +116,12 @@ class QuestionDetail(DetailView):
         return context
         post_details=Post.objects.get(slug=slug)
 
-    
-
-
 
 class AllCategories(ListView):
     model = Category
     template_name = 'blog/all_categories.html'
     context_object_name = 'categories'
+
 
 class QuestionsInCategories(ListView,): 
     model = Question
@@ -147,17 +130,19 @@ class QuestionsInCategories(ListView,):
     
     def get_queryset(self):
         self.category =Category.objects.filter(slug = self.kwargs['slug'])[0]
-        return Question.objects.filter(category = self.category)
+        return Question.objects.filter(category = self.category).order_by('-created_date')
 
     def get_context_data(self, **kwargs):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
         context["main_category"] =self.category 
         return context
 
+
 class AllTags(ListView):
     model = Tag
     template_name='blog/all-tags.html'
     context_object_name = 'tags'
+
 
 class QuestionsInTags(ListView):
     model = Tag
@@ -173,16 +158,17 @@ class QuestionsInTags(ListView):
         return context
 
 
+@login_required
 def update_question(request, pk ):
     context ={}
-    instance = Question.objects.get(id = pk)
     form = UpdateQuestionForm(request.POST)
-    if request.method == "POST" and form.is_valid():
-        print('method post is working' *100)
+    instance = Question.objects.get(id = pk)
+    if request.method == "POST" and form.is_valid()  :
         instance.title = form.cleaned_data.get('title')
         instance.body = form.cleaned_data.get('body')
         instance.category = form.cleaned_data.get('category')
         tag_list= form.cleaned_data.get('tag_char')
+        instance.tag.all().delete() # delete the previous tags in order not to save new ones over the old ones
         tag_list = tag_list.split()
         for item in tag_list:
             if Tag.objects.filter(title = item).exists():
@@ -193,10 +179,9 @@ def update_question(request, pk ):
                 temp_tag.save()
                 temp_tag.refresh_from_db()
                 instance.tag.add(temp_tag.id)    
-                instance.save()
-
-        # return render(request, "blog/update_question.html", context) 
-        return HttpResponseRedirect (reverse_lazy('blog:questions'))
+        instance.save()
+        context = { "question": instance}
+        return HttpResponseRedirect (reverse_lazy('blog:questions'), context)
     if request.method=='GET':
         tags = instance.tag.all()
         t_char = f''
@@ -217,51 +202,6 @@ def update_question(request, pk ):
             initial = initial_dict) 
         context['form']= form 
         return render(request, "blog/update_question.html", context) 
-
-
-
-
-# @method_decorator(login_required, name = 'dispatch')
-# class QuestionUpdate(FormView):#need to check the user log in and writer match
-#     instance = Question.objects.get(id = self.kwargs['pk'])
-#     model  = Question
-#     form_class = UpdateQuestionForm(instance=instance )
-#     # fields = ['title', 'body', 'category','tag', ]
-#     # initial = {'title':'title', 'body': 'body'}
-#     template_name = 'blog/update_question.html'
-#     success_url= reverse_lazy('blog:questions')
-
-
-
-
-
-
-    # def get_initial(self):
-    #     initial = super(QuestionUpdate, self).get_initial()
-    #     return initial
-    
-    # def get_form_class(self):
-    #     return UpdateQuestion
-    
-    # def form_valid(self, form):
-    #     self.object.groups.clear()
-    #     self.object.groups.add(form.cleaned_data['group'])
-    #     return super(UserProfileUpdateView, self).form_valid(form)
-
-
-
-    # # def form_valid(self,*args, **kwargs):
-    #     # pass
-
-    # # def get_context_data(self, **kwargs):
-    # #     context = super().get_context_data(**kwargs)
-    # #     tags = Tag.objects.filter(question= self.kwargs['pk'])
-    # #     tag_char = f''
-    # #     for item in tags :
-    # #         tag_char += str(item)
-    # #     context["tag_char"] =tag_char 
-    # #     return context
-    
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -304,10 +244,6 @@ class QuestionCreate(CreateView):
 @method_decorator(login_required, name = 'dispatch')
 class WriteAnswer(CreateView):
     success_url = reverse_lazy('blog:question')
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["question"] = Question.objects.get(id = self.kwargs['pk'])
-    #     return context
     def get(self, request , pk):
         form = AnswerForm()
         question_to_answer = get_object_or_404(Question, id = pk)
@@ -347,10 +283,11 @@ class UpdateAnswer(UpdateView):
     fields = ['body']
     success_url= reverse_lazy('blog:questions')
 
+@method_decorator(login_required, name = 'dispatch')
 class UpdateComment(UpdateView):
     model=QuestionComment
+    form_class = UpdateCommentFrom
     template_name ='blog/update-comment.html'
-    fields = ['body']
     success_url = reverse_lazy('blog:questions')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -361,7 +298,7 @@ class UpdateComment(UpdateView):
         context["comment"] =comment 
         return context
         
-
+@method_decorator(login_required, name = 'dispatch')
 class DeleteComment(DeleteView):
     model = QuestionComment
     template_name = 'blog/delete-comment.html'
@@ -409,7 +346,7 @@ class CreateReport(CreateView):
             send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
-        return HttpResponseRedirect(reverse_lazy('blog:all-reports')) 
+        return HttpResponseRedirect(reverse_lazy('blog:questions')) 
         
 
 

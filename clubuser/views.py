@@ -8,7 +8,7 @@ from django.contrib.auth.views import  PasswordChangeView
 from django.http import HttpResponse
 from clubuser.models import ClubUser
 from django.contrib.messages.views import SuccessMessageMixin
-from blog.models import  Category, Question, Answer , Report,Tag
+from blog.models import  *
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView
 from .forms import *
 from blog import urls
@@ -18,10 +18,11 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+
+@method_decorator(login_required, name = 'dispatch')
 class PassChangeView(SuccessMessageMixin, PasswordChangeView):
     form_class = PasswordChangeForm
     template_name = 'registration/change-pass.html'
-    # success_url = ('blog:question')
     success_message = ( f'your pass have chnaged dear user !')
     success_url= '/questions'
 
@@ -37,6 +38,7 @@ def profile(request, pk):
         "profile":profile
     }
     return render(request, 'clubuser/user_profile.html', context)
+
 
 class UserCreation(CreateView):
     def post(self, request,*args, **kwargs):
@@ -62,6 +64,7 @@ class UserCreation(CreateView):
         signup_form = SignUpForm()
         return render(request, 'clubuser/signup.html', {'signup_form': signup_form})
 
+
 @login_required
 def edit_profile(request,*args, **kwargs):
     temp = ClubUser.objects.get(id = kwargs['pk'])
@@ -86,6 +89,7 @@ def edit_profile(request,*args, **kwargs):
     context = {'u_form': u_form,'c_form': c_form}
     return render(request, 'clubuser/update-profile.html', context)
 
+
 def login(request):
     if request.method == 'POST':
         user = auth.authenticate(username=request.POST['username'],password = request.POST['password'])
@@ -96,6 +100,7 @@ def login(request):
             return render (request,'registration/login.html/', {'error':'Username or password is incorrect!'})
     else:
         return render(request,'registration/login.html/')
+
 
 def logout(request):
     if request.method == 'POST':
