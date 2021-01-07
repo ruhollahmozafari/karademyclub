@@ -20,13 +20,15 @@ from rest_framework.decorators import api_view
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class SearchResultView(ListView):
     model = Question
     template_name = 'blog/search_results.html'
+    paginate_by = 5
+    context_object_name = 'questions'
     def get_queryset(self):
-        self.keyword = self.request.GET.get('keywords')
+        self.keyword = self.request.GET.get('keywords', None)
         object_list = Question.objects.filter(title__icontains=self.keyword)
         return object_list
 
@@ -48,6 +50,8 @@ class SearchResultView(ListView):
             context["main_tag"]= tag
             context["is_tag"] = True
         return context
+
+
 
 @login_required
 def question_comment(request, *args, **kwargs):
@@ -124,18 +128,20 @@ class AllCategories(ListView):
 
 
 class QuestionsInCategories(ListView,): 
-    model = Question
+    model = Category
     template_name = 'blog/questions_in_categories.html'
     context_object_name = 'questions'
-    
-    def get_queryset(self):
-        self.category =Category.objects.filter(slug = self.kwargs['slug'])[0]
-        return Question.objects.filter(category = self.category).order_by('-created_date')
+    paginate_by = 5
 
+    
+    def get_queryset(self,*args, **kwargs):
+        self.cat =get_object_or_404(Category, slug = self.kwargs['slug'])
+        return Question.objects.filter(category = self.cat)
     def get_context_data(self, **kwargs):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
-        context["main_category"] =self.category 
+        context["main_cat"]= self.cat
         return context
+
 
 
 class AllTags(ListView):
@@ -148,6 +154,8 @@ class QuestionsInTags(ListView):
     model = Tag
     template_name = 'blog/questions-in-tags.html'
     context_object_name = 'questions'
+    paginate_by = 5
+
     def get_queryset(self,):
         self.tag =get_object_or_404(Tag, slug = self.kwargs['slug'])
         return Question.objects.filter(tag = self.tag) 
@@ -318,6 +326,7 @@ class ListReport(ListView):
     template_name = 'blog/all-reports.html'
     context_object_name = 'reports'
     ordering= ['-report_date']
+    paginate_by = 5
   
 
 @method_decorator(login_required, name = 'dispatch')
@@ -348,6 +357,11 @@ class CreateReport(CreateView):
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:questions')) 
         
+
+class DeleteReport(DeleteView):
+    model = Report
+    template_name = 'blog/delete-report.html'
+    success_url = reverse_lazy('blog:all-reports')
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV

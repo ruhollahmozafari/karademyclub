@@ -2,8 +2,7 @@
 {% load hitcount_tags %}
 
 {% block content %}
-
-    {% for question in object_list %}
+    {% for question in questions %}
     
 <div class ="d-flex">
 
@@ -12,7 +11,7 @@
                   <h5 class="card-title">{{ question.title}}</h5>
                   <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
                   <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
-                  <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
+                  <a href="{% url 'blog:question-detail' question.pk question.slug %}"  class="card-link">see question</a>
                   <p >  Views: {% get_hit_count for question%} </p>
                   <p> likes: {{question.like.count}}
                   
@@ -40,13 +39,11 @@
                 
               </div>
             </div>
-
+{% endfor %}
     <br/><be>
           <hr>
           <br/>
-
-{% endfor %}
-{% endif %}
+          {% endif %} 
 
 {% endblock %}
 

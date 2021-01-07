@@ -1,7 +1,10 @@
 {% extends 'layouts/base.html' %}
-
+{% load pagination_tags %}
 {% block content %}
+{% autopaginate reports 4 %}
+
 {% if request.user.is_staff  %}
+
 {% for report  in reports  %}
 
 <div class="card">
@@ -14,7 +17,17 @@
     <p>reported case: {{report.content_object}}</p>
     <a href="{{report.content_object.get_absolute_url }}"  class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true" >see the case</a>
   </p>
+  
+  <a href="{% url 'blog:delete-report' report.pk %}"  class="btn btn-Danger btn-sm" role="button" aria-pressed="true" > delete case </a>
+</div>
 </div>
 {%endfor%}
 {% endif %}
+ <br/><be>
+          <hr>
+          <br/>
+{% paginate %}
 {% endblock %}
+
+
+

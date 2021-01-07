@@ -1,0 +1,14 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+{% if request.user == comment.user or request.user.is_staff %}
+<form method="post">{% csrf_token %}
+    <p>Are you sure you want to delete this report case :{{ object|safe }}</p>
+    <input class="btn btn-Danger btn-sm" type="submit" value="Confirm">
+</form>
+{% else %}
+<h1>you dont have power to delete report</h1>
+
+{% endif %}
+
+{% endblock %}

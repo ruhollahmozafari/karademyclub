@@ -62,7 +62,7 @@ class Question(models.Model):
 
 
     class Meta :
-        ordering = ['created_date']
+        ordering = ('-created_date',)
         # add verbose_names later 
 
     def save(self, *args, **kwargs):

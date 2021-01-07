@@ -6,10 +6,11 @@ from django.views.generic.dates import ArchiveIndexView
 from django.views.generic import TemplateView
 from . import api_views
 app_name='blog'  
+from django.core.paginator import Paginator
 
 urlpatterns = [
     path('',TemplateView.as_view(template_name = 'blog/home_page.html'), name = 'home'),
-    path('questions/', ArchiveIndexView.as_view(model=Question,template_name = 'blog/questions.html', date_field="created_date"), name= 'questions'),#just to show all the questoins
+    path('questions/', ArchiveIndexView.as_view(model=Question, date_field="created_date", paginate_by = 5), name= 'questions'),#just to show all the questoins
     path('questions/<int:pk>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',QuestionsInCategories.as_view(), name = 'questions-in-categories'),
     path('questions-in-tag/<str:slug>/',QuestionsInTags.as_view(), name = 'questions-in-tags'),
@@ -26,6 +27,7 @@ urlpatterns = [
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),
     path('all-reports/', ListReport.as_view(), name = 'all-reports'),
     path('create-report/<str:app>/<str:model>/<int:pk>/', CreateReport.as_view(), name = 'create-report'),
+    path('delete-report/<int:pk>/', DeleteReport.as_view(), name = 'delete-report'),
     path('question-comment/<int:pk>/', question_comment, name = 'question-comment'),
     path('delete-comment/<int:pk>/', DeleteComment.as_view(), name = 'delete-comment'),
     path('update-comment/<int:pk>/', UpdateComment.as_view(), name = 'update-comment'),
