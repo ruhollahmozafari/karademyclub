@@ -10,18 +10,17 @@ from django.core.paginator import Paginator
 
 urlpatterns = [
     path('',TemplateView.as_view(template_name = 'blog/home_page.html'), name = 'home'),
-    path('questions/', ArchiveIndexView.as_view(model=Question, date_field="created_date", paginate_by = 5), name= 'questions'),#just to show all the questoins
+    path('questions/', ArchiveIndexView.as_view(model=Question, date_field="created_date", paginate_by = 5), name= 'questions'),
     path('questions/<int:pk>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',QuestionsInCategories.as_view(), name = 'questions-in-categories'),
     path('questions-in-tag/<str:slug>/',QuestionsInTags.as_view(), name = 'questions-in-tags'),
-    path('all-categories/', AllCategories.as_view() , name= 'all-categories'), # it is not neccesary because it will be shown on the left or right side of the webpage
+    path('all-categories/', AllCategories.as_view() , name= 'all-categories'),
     path('all-tags/', AllTags.as_view() , name= 'all-tags'), 
     path('ask/',QuestionCreate.as_view(), name = 'ask'),
     path('update-question/<int:pk>/', update_question,name = 'update-question'),
     path('delete-question/<int:pk>/', QuestionDelete.as_view(), name = 'delete-question'),
     path('api/categories/',api_views.category_list),
     path('create-like/<str:app>/<str:model>/<int:pk>/', LikeCreate, name = 'create-like'),
-    # path('like-answer/<int:pk>/', LikeAnswerView, name = 'like-answer'),
     path('answer/<int:pk>/', WriteAnswer.as_view(), name = 'write-answer'),
     path('delete-answer/<int:pk>', DeleteAnswer.as_view(), name = 'delete-answer'),
     path('update-answer/<int:pk>', UpdateAnswer.as_view(), name = 'update-answer'),

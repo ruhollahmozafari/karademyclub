@@ -26,7 +26,7 @@
           <h5 class="card-title">{{question.title}}</h5>
           <p class="card-text">{{ question.body|safe }}</p>
                   <a href="{% url 'blog:write-answer' question.pk %}" role="button" class="btn btn-success btn-sm">answer the question</a>
-                  {% if user == question.user %}
+                  {% if request.user == question.user or request.user.is_staff %}
         <a href="{% url 'blog:update-question' question.pk %}" role="button" class="btn btn-success btn-sm">edit the question</a>
       <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-sm">delete this question</a>
       {% endif %}
@@ -88,7 +88,7 @@
       <button type = "submit" , name = "question_id", value = "{{question.id}}", class ="btn btn-secondary btn-sm">submit comment</button>
 </form>
 
-
+   
   
     <br/><be>
           <hr>
@@ -112,7 +112,7 @@ there is {{ anwers.count }} answer(s) for this question
    </a>
 
         <p class="card-text">{{answer.body|safe}}</p>
-{% if user == answer.user %}
+{% if user == answer.user or request.user.is_staff %}
         <a href="{% url 'blog:update-answer' answer.pk %}" role="button" class="btn btn-success btn-sm">edit the answer</a>
       <a href="{% url 'blog:delete-answer' answer.pk %}" role="button" class="btn btn-danger btn-sm">delete this answer</a>
       {% endif %}

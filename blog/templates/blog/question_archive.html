@@ -1,20 +1,32 @@
 {% extends 'layouts/base.html' %}
-{% load hitcount_tags %}
-
+{% load static %}
 {% block content %}
 
     {% for question in object_list %}
     
+
 <div class ="d-flex">
 
-    <div class="card" style="width: 100rem; height: 15rem">
+    <div class="card" style="width: 69.5rem; height: 17rem">
+            <h5 class="card-header">  
+                  {% for tag in question.tag.all %} 
+          <a href="{% url 'blog:questions-in-tags' tag.slug %}" class="btn btn-outline-Success btn-sm" role="button" aria-pressed="true" >[ {{tag}} ]</a>
+                  {% endfor%}
+              <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
+       <a href="{% url 'clubuser:profile' question.user.pk %}"role="button" aria-pressed="true">{{question.user.username}}
+       {% if question.user.clubuser.image_url %}                    
+                  <img src="{{ question.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
+                {% else %}
+                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
+                  {% endif %}</a>
                 <div class="card-body">
                   <h5 class="card-title">{{ question.title}}</h5>
                   <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
                   <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
-                  <a href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
                   <p >  Views: {{question.views_count}} </p>
-                  <p> likes: {{question.like.count}}
+                  <p> likes: {{question.like.count}}</p>
+                  
+                  <a class = "text_right" href="{% url 'blog:question-detail' question.id question.slug %}"  class="card-link">see question</a>
                   
                 </div>
               </div>
@@ -23,10 +35,10 @@
  <br/><be>
           <hr>
           <br/>
-          
-    {%endfor%}
-
-    {% comment %} pagination {% endcomment %}
+           {%endfor%}
+ <br/><be>
+          <hr>
+          <br/>
 <h3>
     {% if is_paginated %}
   <ul class="pagination">

@@ -14,7 +14,7 @@
   <div class="card-body">
     <h5 class="card-title"> reason: {{report.reason}} </h5>
     <p class="card-text"> detail : {{report.detail|truncatewords:25|safe}}</p>
-    <p>reported case: {{report.content_object}}</p>
+    <p> reported case: {{report.content_object}} </p>
     <a href="{{report.content_object.get_absolute_url }}"  class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true" >see the case</a>
   </p>
   

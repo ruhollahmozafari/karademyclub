@@ -21,6 +21,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Count,Min, Max, Avg, Q
 
 class SearchResultView(ListView):
     model = Question
@@ -29,29 +30,11 @@ class SearchResultView(ListView):
     context_object_name = 'questions'
     def get_queryset(self):
         self.keyword = self.request.GET.get('keywords', None)
-        object_list = Question.objects.filter(title__icontains=self.keyword)
+        object_list = Question.objects.filter(Q (title__icontains=self.keyword) 
+        | Q(tag__title__icontains = self.keyword) 
+        | Q(category__title__icontains = self.keyword )).order_by('-created_date')
+        
         return object_list
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchResultView,self).get_context_data(**kwargs)
-        try:
-            tag = Tag.objects.get(title = self.keyword)
-        except:
-            tag = None
-        if tag != None:
-            try:
-                questions_in_tags = Question.objects.filter(tag = tag)
-            except:
-                questions_in_tags = None
-        else :
-            questions_in_tags = None
-        if questions_in_tags != None :
-            context["questions_in_tags"] = questions_in_tags
-            context["main_tag"]= tag
-            context["is_tag"] = True
-        return context
-
-
 
 @login_required
 def question_comment(request, *args, **kwargs):
@@ -143,11 +126,16 @@ class QuestionsInCategories(ListView,):
         return context
 
 
-
 class AllTags(ListView):
     model = Tag
     template_name='blog/all-tags.html'
     context_object_name = 'tags'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        most_used_tags= Tag.objects.all().annotate(post_count=Count('question')).order_by('-post_count')[0:10]
+        context["most_used_tags"] = most_used_tags
+        return context
 
 
 class QuestionsInTags(ListView):
@@ -362,6 +350,21 @@ class DeleteReport(DeleteView):
     model = Report
     template_name = 'blog/delete-report.html'
     success_url = reverse_lazy('blog:all-reports')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # from this line on are the the funciotns which was created at first then the whole view was turned to CBV

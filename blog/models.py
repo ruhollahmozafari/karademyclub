@@ -40,6 +40,8 @@ class Tag(models.Model):
         
     def __str__(self):
         return self.title
+    def quantity(self):
+        return self.question_set.all().count()
 
 
 class Question(models.Model):
@@ -51,9 +53,9 @@ class Question(models.Model):
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
     like= models.ManyToManyField(User,related_name= 'like_question')
-    category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name
-    tag = models.ManyToManyField(Tag, blank= True)
-    
+    category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name 
+    tag = models.ManyToManyField(Tag, blank= True)   
+
 
     @property
     def views_count(self):
@@ -63,7 +65,9 @@ class Question(models.Model):
 
     class Meta :
         ordering = ('-created_date',)
-        # add verbose_names later 
+        verbose_name= 'سوال'
+
+
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title, allow_unicode= True)
@@ -93,6 +97,7 @@ class Answer(models.Model):
     created_date = models.DateTimeField(auto_now_add= True,)
     updated_date = models.DateTimeField(auto_now= True)
     like =models.ManyToManyField(User,related_name='like_answer')
+
     
 
     class Meta :

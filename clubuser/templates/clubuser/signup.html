@@ -6,8 +6,7 @@
 <form method="POST" enctype="multipart/form-data" >
 	{% csrf_token %}
 	{{ signup_form|crispy  }}
-	
 	<button type= "submit"  class="btn btn-dark">Post</button>
 </form>
-
+	
 {% endblock %}

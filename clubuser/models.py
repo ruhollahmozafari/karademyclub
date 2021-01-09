@@ -24,6 +24,7 @@ class ClubUser(models.Model):
             ('can_view', 'Can View'),
             ('can_modify', 'Can Modify'),
         )
+        
     def save(self,*args, **kwargs):
         super().save()
         if self.profile_image:

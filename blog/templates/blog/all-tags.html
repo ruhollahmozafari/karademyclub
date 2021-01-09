@@ -1,8 +1,25 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
-{% for tag  in tags %}
-        <a href="{% url 'blog:questions-in-tags' tag.slug %}" role="button" class="btn btn-success btn-large">{{tag.title}}</a>
+<h3>Most Used Tag</h3>
+{% for tag  in most_used_tags %}
+        <a href="{% url 'blog:questions-in-tags' tag.slug %}" role="button" class="btn btn-Primary btn-large">{{tag.title}} 
+        [{{tag.quantity}}]
+         </a>
 {%endfor%}
 
+ <br/><be>
+          <hr>
+          <br/>
+          
+
+<h3>All Tags</h3>
+{% for tag  in tags %}
+        <a href="{% url 'blog:questions-in-tags' tag.slug %}" role="button" class="btn btn-success btn-large">{{tag.title}} 
+        [{{tag.quantity}}]
+         </a>
+{%endfor%}
+
+
 {% endblock %}
+
