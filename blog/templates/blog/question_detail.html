@@ -2,6 +2,36 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
+  <div class="container">
+    
+    {% if messages %}
+    <h6>Messages</h6>
+    {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+    <div class="alert alert-primary" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+  </div>
+
+
 
 <div class ="d-flex">
 
@@ -13,13 +43,8 @@
                   {% endfor%}
               <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
        <a href="{% url 'clubuser:profile' question.user.pk %}"role="button" aria-pressed="true">{{question.user.username}}
-       {% if question.user.clubuser.image_url %}                    
                   <img src="{{ question.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
-                {% else %}
-                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
-
-                  {% endif %}</a>
-
+</a>
 
         </h5>
         <div class="card-body">
@@ -93,32 +118,26 @@
     <br/><be>
           <hr>
           <br/>
+
 {% if answers %}
 there is {{ anwers.count }} answer(s) for this question
 {% else %}
 <h2>Unfortunately this question has no answer yet !!!</h2>
 {% endif %}
+
  <h3> Answers </h3>
   {% for answer in answers%}
     <div class="card" style="width: 69.5rem; height: 15rem">
       <div class="card-body">
-  
    <a href="{% url 'clubuser:profile' answer.user.pk %}"role="button" aria-pressed="true"> {{answer.user}} 
-         {% if answer.user.clubuser.image_url %}                    
-                  <img src="{{ answer.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
-                {% else %}
-                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
-                  {% endif %}</a>
-   </a>
-
+                  <img src="{{ answer.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50"></a>
         <p class="card-text">{{answer.body|safe}}</p>
 {% if user == answer.user or request.user.is_staff %}
         <a href="{% url 'blog:update-answer' answer.pk %}" role="button" class="btn btn-success btn-sm">edit the answer</a>
       <a href="{% url 'blog:delete-answer' answer.pk %}" role="button" class="btn btn-danger btn-sm">delete this answer</a>
       {% endif %}
-          <br/><be>
-          <br/>
-          
+
+       <p class = "text-center">
            <form action = "{% url 'blog:create-like' 'blog' 'answer' answer.pk %}" method="POST">{% csrf_token %}{{answer.created_date}}
                   {% if user in  answer.like.all %}
               <button type = "submit" , name = "answer_id", value = "{{answer.pk}}", class ="btn btn-danger btn-sm">vote down</button>
@@ -128,11 +147,12 @@ there is {{ anwers.count }} answer(s) for this question
                   <a role="button" class ="btn btn-primary btn-sm" aria-pressed="true">likes : {{answer.like.count}} </a>
                   
                   <a href="{% url 'blog:create-report' 'blog' 'Answer' answer.pk  %}" role="button" class="btn btn-warning btn-sm">report</a>
-                  </form>
-
-
+                  </form> 
+                  </p>
+                  
       </div>
     </div>
+
 {%endfor%}
 {% endblock %}
 

@@ -1,6 +1,7 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
+
 {% if request.user == answer.user or request.user.is_staff %}
 <form method="post">{% csrf_token %}
 {{form.media}}

@@ -47,6 +47,13 @@ def question_comment(request, *args, **kwargs):
             new_comment.question = question1
             new_comment.user = request.user
             new_comment.save()
+            # sending a notif for user that you got a comment for your question
+            Notification.objects.create(
+                user = new_comment.user,
+                type ='question commented',
+                body = f'your question: {new_comment.body[0:50]} received a comment by  {new_comment.user} ',
+                object= new_comment.question)
+
     else:
         context['c_form'] = c_form
     return HttpResponseRedirect(reverse_lazy('blog:question-detail',args=[question1.id , question1.slug]))
@@ -55,18 +62,48 @@ def question_comment(request, *args, **kwargs):
 def LikeCreate(request, *args, **kwargs):
     object_type = ContentType.objects.get(app_label= kwargs['app'], model = kwargs['model'],)
     real_object = object_type.get_object_for_this_type(id = kwargs['pk'])
-    if kwargs['model']=='answer':
+    #making a proper id to redirect to question-detail page
+    model_name = kwargs['model']
+    if model_name == 'answer': # setting id for answer instance 
         id_to_question= real_object.question_id.id
         slug_to_question = real_object.question_id.slug
-    else :
+    else :                      #setting id for question instance
         id_to_question = real_object.id
         slug_to_question = real_object.slug
-    if real_object.like.filter(id = request.user.id).exists():
+    #creating a like or if it's liked unlike it 
+    if real_object.like.filter(id = request.user.id).exists(): # checking model name to create or delete like for which model
         real_object.like.remove(request.user)
+
+        if model_name == 'question': # checking the model to delete the notif for user
+            Notification.objects.get(
+                user = request.user,
+                type ='question liked',
+                body = f'your question: {real_object.body[0:50]} was liked by someone ',
+                object= real_object).delete()
+        else :
+            Notification.objects.get(
+                user = request.user ,
+                type ='answer liked',
+                body = f'your answer: {real_object.body[0:50]} was liked by someone ',
+                object= real_object.question_id).delete()
+
     else:
         real_object.like.add(request.user)
+        if model_name == 'question': # checking the model to make a valid notid for user 
+            Notification.objects.create(
+                user = request.user ,
+                type ='question liked',
+                body = f'your question: {real_object.body[0:50]} was liked by someone ',
+                object= real_object)
+        else :
+            Notification.objects.create(
+                user = request.user,
+                type ='answer liked',
+                body = f'your answer: {real_object.body[0:50]} was liked by someone ',
+                object= real_object.question_id)
 
     return HttpResponseRedirect(reverse('blog:question-detail',args = [id_to_question , slug_to_question]))
+
 
 class QuestionDetail(DetailView):
     template_name = 'blog/question_detail.html'
@@ -258,10 +295,14 @@ class WriteAnswer(CreateView):
             answer.body = form.cleaned_data.get('body')
             answer.question_id = Question.objects.get(id = request.POST.get('question_id'))
             question= get_object_or_404(Question, id = pk)
-            # answer.question_id = form.cleaned_data.get('question_id')
             answer.save()
+            Notification.objects.create(
+                user = request.user ,
+                type ='question answered',
+                body = f'your question: {answer.question_id.body[0:50]} was answered by {answer.user} ',
+                object= answer.question_id)
+
             form = AnswerForm()
-            # return HttpResponseRedirect(reverse_lazy('blog:questions'))
             return HttpResponseRedirect(reverse_lazy('blog:question-detail', args=[question.id, question.slug]))
 
 
@@ -269,7 +310,20 @@ class WriteAnswer(CreateView):
 class DeleteAnswer(DeleteView):
     model = Answer
     template_name = 'blog/delete-answer.html'
+    # success_
     success_url = reverse_lazy('blog:questions')
+    def get_context_data(self,*args, **kwargs): # to delete the notif for created answer in WriteAnswer
+        context = super().get_context_data(**kwargs)
+        try:
+            answer = Answer.objects.get(pk = self.kwargs['pk'])
+            Notification.objects.get(
+                user = answer.user,
+                type ='question answered',
+                body = f'your question: {answer.question_id.body[0:50]} was answered by {answer.user} ',
+                object= answer.question_id).delete()
+        except:
+            pass
+        return context
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -303,6 +357,16 @@ class DeleteComment(DeleteView):
         context = super().get_context_data(**kwargs)
         comment = QuestionComment.objects.get(id = self.kwargs['pk'])
         question = comment.question
+        # deleting the notif for having comment for your question casue it was deleted
+        try:
+            Notification.objects.get(
+                user = comment.user,
+                type ='question commented',
+                body = f'your question: {comment.body[0:50]} received a comment by  {comment.user} ',
+                object= comment.question).delete()
+        except:
+            pass
+
         context["comment"] =comment 
         context["question"] = question
         return context
@@ -350,16 +414,6 @@ class DeleteReport(DeleteView):
     model = Report
     template_name = 'blog/delete-report.html'
     success_url = reverse_lazy('blog:all-reports')
-
-
-
-
-
-
-
-
-
-
 
 
 

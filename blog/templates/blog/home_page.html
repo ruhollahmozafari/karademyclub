@@ -1,11 +1,32 @@
 {% extends 'layouts/base.html' %}
- {% if messages %}
-     {% for message in messages %}
-         <div class="text-center alert alert-{{ message.tags }}">
-             {{ message|safe }}
-         </div>
-     {% endfor %}
- {% endif %}
+  <div class="container">
+    <h4>Messages</h4>
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+    <div class="alert alert-primary" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+  </div>
+
 {% block content %}
 
 <h1 class="text-center"> Hello this is a Q&A website</h1>

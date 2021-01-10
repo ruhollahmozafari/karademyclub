@@ -1,9 +1,10 @@
 {% extends 'layouts/base.html' %}
-
+{% load static %}
 {% block content %}
-  <div class="container">
+
+  <div class="container">    
     {% if messages %}
-     <h4>Messages</h4>
+    <h6>Messages</h6>
     {% for message in messages %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
     <div class="alert alert-primary" role="alert">
@@ -29,35 +30,15 @@
     {% endif %}
   </div>
 
+               
+                {% for notif  in notifs  %}
+                <div class="container"> 
+                <div class="alert alert-primary" role="alert">
+                <a href="{{notif.get_absolute_url}}" role= "button" class="btn btn-outline-primary btn-sm"> check it out </a>
+                {{ notif.body }}
+                </div>
+                
 
-
-{% if error %}
-{{ error }}
-
-<br/>
-<br/>
-{% endif %}
-
-<h1>Login!</h1>
-
-<form method = "POST" action="{% url 'clubuser:login' %}">
-    {% csrf_token %}
-    username:
-    <br/>
-    <input type="text" name="username" />
-    <br/>
-    Password:
-    <br/>
-    <input type="password" name="password" />
-    <br/>
- <br/><be>
-          <br/>
-    <input class ="btn btn-primary" type="submit" value= "Login" />
-    <br/>
-</form>
-
-<h2 class = "text-right">
- <a href="{% url 'password_reset' %}" role="button" class="btn btn-outline-secondary">I foget my password</a>
-</h2>
+                {% endfor %}
 
 {% endblock %}

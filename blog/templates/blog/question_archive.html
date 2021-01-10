@@ -1,6 +1,35 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
+  <div class="container">
+    <h4>Messages</h4>
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+    <div class="alert alert-primary" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+  </div>
+
+
 
     {% for question in object_list %}
     
@@ -14,11 +43,8 @@
                   {% endfor%}
               <a href="{% url 'blog:questions-in-categories' question.category.slug %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">{{question.category}}</a>
        <a href="{% url 'clubuser:profile' question.user.pk %}"role="button" aria-pressed="true">{{question.user.username}}
-       {% if question.user.clubuser.image_url %}                    
                   <img src="{{ question.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
-                {% else %}
-                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
-                  {% endif %}</a>
+   </a>
                 <div class="card-body">
                   <h5 class="card-title">{{ question.title}}</h5>
                   <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>

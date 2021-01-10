@@ -9,7 +9,7 @@ class ClubUser(models.Model):
     gender_choices={('male','آقا'),('woman','خانم')}
 
     user = models.OneToOneField(User,default=None, on_delete= models.CASCADE ,)
-    profile_image = models.ImageField(null=True ,default = 'default.jpeg',upload_to = 'profile_pics' ,blank = True)
+    profile_image = models.ImageField(null=True ,default = 'default.jpeg',upload_to = 'profile_pics')
     interest = models.ManyToManyField("blog.Category" ,blank= True)
     
     def __str__(self): 
@@ -18,13 +18,15 @@ class ClubUser(models.Model):
     def image_url(self):
         if self.profile_image and hasattr(self.profile_image, 'url'):
             return self.profile_image.url
- 
+        else:
+            return '/static/default.jpeg'
+            
     class Meta :
         permissions = (
             ('can_view', 'Can View'),
             ('can_modify', 'Can Modify'),
         )
-        
+
     def save(self,*args, **kwargs):
         super().save()
         if self.profile_image:

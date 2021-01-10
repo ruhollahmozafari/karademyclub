@@ -33,3 +33,4 @@ class ClubUserUpdateForm(forms.ModelForm):
         fields = [
             "interest","profile_image",
             ]
+

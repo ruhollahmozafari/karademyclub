@@ -1,7 +1,36 @@
-<!DOCTYPE html>
+a<!DOCTYPE html>
 
-{% block content %}
 {% load static %}
+{% block content %}
+
+  <div class="container">
+    {% if messages %}
+     <h4>Messages</h4>
+    {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+    <div class="alert alert-primary" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+  </div>
+
 
 <html lang="en">
 <head>
@@ -78,7 +107,8 @@
               <li class="breadcrumb-item"><a href="{% url 'blog:home' %}">Home</a></li>
               <li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
               <li class="breadcrumb-item active" aria-current="page">User Profile</li>
-              
+
+
       {% if request.user  != profile.user %}
                     <a href="{% url 'blog:create-report' 'clubuser' 'clubuser' profile.pk %}" role="button" class="btn btn-warning btn-sm">report</a>
 
@@ -93,12 +123,9 @@
               <div class="card">
                 <div class="card-body">
                   <div class="d-flex flex-column align-items-center text-center">
-                  {% if profile.image_url %} 
-                  <img src="{{ profile.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
-                {% else %}
-                  <img src="{% static '/default.jpeg' %}" class="rounded-circle" width="150">
-                  {% endif %}
-                   
+                  
+                  <img src="{{ profile.image_url}}"  class="rounded-circle" width="150">
+       
                     
                     <div class="mt-3">
                       <h4>{{profile.user.get_full_name}}</h4>
@@ -169,9 +196,14 @@
                     
                   </div>
                   <hr>
-                  
+                  <a  href= "{% url 'clubuser:my-questions' user.pk %}" role="button" class="btn btn-primary btn-large" >my questions</a>
 
-              <div class="row gutters-sm">
+                  <p class ="text-left">
+                  <a   href= "{% url 'clubuser:my-notifs' user.pk %}" role="button" class="btn btn-primary btn-Info"> Notif Box</a>
+                  </p>
+
+
+              {% comment %} <div class="row gutters-sm">
                 <div class="col-sm-6 mb-3">
                   <div class="card h-100">
                     <div class="card-body">
@@ -230,7 +262,9 @@
             </div>
           </div>
         </div>
-    </div>
+    </div> {% endcomment %}
+                  
+            
     {% comment %} {% load crispy_forms_tags %}
 <form method="POST" enctype="multipart/form-data" >
 	{% csrf_token %}

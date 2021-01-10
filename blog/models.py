@@ -56,18 +56,13 @@ class Question(models.Model):
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name 
     tag = models.ManyToManyField(Tag, blank= True)   
 
-
     @property
     def views_count(self):
         return QuestionViews.objects.filter(question=self).count()
-    
-
-
+        
     class Meta :
         ordering = ('-created_date',)
         verbose_name= 'سوال'
-
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title, allow_unicode= True)
@@ -80,7 +75,7 @@ class Question(models.Model):
     def get_absolute_url(self):
         return reverse("blog:question-detail",args=[self.pk , str(self.slug)])
 
-     
+
 class QuestionViews(models.Model):
     IPAddres= models.GenericIPAddressField(default="45.243.82.169")
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -97,8 +92,6 @@ class Answer(models.Model):
     created_date = models.DateTimeField(auto_now_add= True,)
     updated_date = models.DateTimeField(auto_now= True)
     like =models.ManyToManyField(User,related_name='like_answer')
-
-    
 
     class Meta :
         pass
@@ -132,8 +125,6 @@ class Report(models.Model):
         return str(self.content_object)
 
         
-    
-
 class QuestionComment(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     question = models.ForeignKey(Question,null= True ,on_delete=models.CASCADE)
@@ -143,5 +134,35 @@ class QuestionComment(models.Model):
         return str(self.body)
     def get_absolute_url(self):
         return reverse("blog:question-detail",args=[self.question.pk , str(self.question.slug)])
+
+
+class Notification(models.Model):
+    notification_type = (
+        ("question liked" ,"question likedd"),
+        ("answer liked","answer liked"),
+        ("question reported",'question reported'),
+        ("answer reported","answer reported"),
+        ("comment reported","comment reported"),
+        ("question answered","question answered"),
+        ("question commented","question commented"),
+    )
+
+    user =models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=35, choices= notification_type, default= '', blank = True)
+    read = models.BooleanField(default = False)
+    body = models.CharField(max_length = 500 ,default='', blank = True)
+    object = models.ForeignKey(Question, on_delete=models.CASCADE)
+    created_date = models.DateField(auto_now=True)
+
+    #Since all the question, answer, comment are in one signle page(blog:question-detail) the object be > 
+    # >the question instance to make the redirect easier and also the get_absolute_url goes to related question 
+    # > also note that in all the view while we are creating a notif the object of instance must be a question instance
+    # > the profile report will be managed later 
+    def get_absolute_url(self):
+        return reverse("blog:question-detail", kwargs={"pk": self.object.pk, "slug": self.object.slug})
+
+
+    
+
 
 

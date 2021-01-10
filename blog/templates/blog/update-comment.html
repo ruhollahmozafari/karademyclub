@@ -1,8 +1,8 @@
 {% extends 'layouts/base.html' %}
 {% block content %}
 {% if request.user == comment.user or request.user.is_staff %}
-<div class ="d-flex">
 
+<div class ="d-flex">
     <div class="card" style="width: 100rem; height: 15rem">
                 <div class="card-body">
                   <h5 class="card-title">{{ question.title}}</h5>
@@ -29,7 +29,4 @@
 
 {% endif %}
 
-
-
 {% endblock %}
-

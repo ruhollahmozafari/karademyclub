@@ -49,6 +49,7 @@ def password_reset_request(request):
 						send_mail(subject, email, 'ruhytest@gmail.com' , [user.email], fail_silently=False)
 					except BadHeaderError:
 						return HttpResponse('Invalid header found.')
+                    
 					return redirect ("/password_reset/done/")
 	password_reset_form = PasswordResetForm()
 	return render(request=request, template_name="layouts/password/password_reset.html", context={"password_reset_form":password_reset_form})
@@ -68,12 +69,21 @@ def profile(request, pk):
     user1 = User.objects.get(id = pk)
     main_pk = user1.clubuser.id
     profile = get_object_or_404(ClubUser, pk = main_pk )
+    questions = Question.objects.filter(user = user1)
 
     context = {
-        "profile":profile
+        "profile":profile,
+        "questions":questions,
     }
     return render(request, 'clubuser/user_profile.html', context)
 
+class MyQuestion(ListView):
+    model = Question
+    template_name = 'clubuser/question_archive.html'
+    context_object_name = 'questions'
+    def get_queryset(self,*args, **kwargs):
+        return Question.objects.filter(user__id =  self.kwargs['pk'])
+    
 
 class UserCreation(CreateView):
     def post(self, request,*args, **kwargs):
@@ -93,6 +103,7 @@ class UserCreation(CreateView):
             recepient = str(new_user.email)
             send_mail(subject, message, 'ruhytest@gmail.com', [recepient], fail_silently = True)
             auth_login(request, new_user)
+            messages.success(request, "Your account has been created, welcome ")
         return redirect('blog:questions') 
         
     def get(self, request,*args, **kwargs):
@@ -120,7 +131,7 @@ def edit_profile(request,*args, **kwargs):
     else:
         u_form = UserUpdateForm(instance=request.user)
         c_form = ClubUserUpdateForm(instance=request.user.clubuser)
-
+        messages.success(request, "Your account has been created, welcome ")
     context = {'u_form': u_form,'c_form': c_form}
     return render(request, 'clubuser/update-profile.html', context)
 
@@ -142,3 +153,11 @@ def logout(request):
         auth.logout(request)
     return render(request, 'registration/logout.html')
 
+class NotificationView(ListView):
+    template_name = 'clubuser/my_notifs.html'
+    context_object_name = 'notifs'
+    def get_queryset(self):
+        user1 = get_object_or_404(User, pk = self.kwargs['pk'])
+        return Notification.objects.filter(user = user1)
+
+        
