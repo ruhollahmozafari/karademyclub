@@ -17,15 +17,15 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       {% if  user.is_authenticated %}
-     <p> 
+     
      <a class="navbar-brand" href="{% url 'clubuser:profile' user.id %}">{{user.get_full_name}}</a>
+          <a class="navbar-brand" href="{% url 'clubuser:my-notifs' request.user.pk %}">InBox</a>
 
-      <form method = "POST" action="{% url 'clubuser:logout' %}">
+      <form class="text-center" method = "POST" action="{% url 'clubuser:logout' %}">
         {% csrf_token %}
-        <input class ="button" type="submit" value= "logout" />
+        <input class ="btn btn-outline-secondary btn-sm" type="submit" value= "logout" />
     </form>
   
-    </p>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         {% else %}
         <a class="navbar-brand" href="{% url 'clubuser:login' %}">login</a>

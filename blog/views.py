@@ -23,6 +23,10 @@ from django.utils.html import strip_tags
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Min, Max, Avg, Q
 
+class HomeView(TemplateView):
+    template_name = 'blog/home_page.html'
+
+
 class SearchResultView(ListView):
     model = Question
     template_name = 'blog/search_results.html'
@@ -51,7 +55,7 @@ def question_comment(request, *args, **kwargs):
             Notification.objects.create(
                 user = new_comment.user,
                 type ='question commented',
-                body = f'your question: {new_comment.body[0:50]} received a comment by  {new_comment.user} ',
+                body = f'your question: {new_comment.body[0:50]} received a comment by  {request.user} ',
                 object= new_comment.question)
 
     else:
@@ -75,31 +79,37 @@ def LikeCreate(request, *args, **kwargs):
         real_object.like.remove(request.user)
 
         if model_name == 'question': # checking the model to delete the notif for user
-            Notification.objects.get(
-                user = request.user,
-                type ='question liked',
-                body = f'your question: {real_object.body[0:50]} was liked by someone ',
-                object= real_object).delete()
+            try:
+                Notification.objects.get(
+                    user = real_object.user,
+                    type ='question liked',
+                    body = f'your question: {real_object.body[0:50]} was liked by someone ',
+                    object= real_object).delete()
+            except:
+                pass
         else :
-            Notification.objects.get(
-                user = request.user ,
-                type ='answer liked',
-                body = f'your answer: {real_object.body[0:50]} was liked by someone ',
-                object= real_object.question_id).delete()
+            try:
+                Notification.objects.get(
+                    user = real_object.user ,
+                    type ='answer liked',
+                    body = f'your answer: {real_object.body[0:50]} was liked by someone ',
+                    object= real_object.question_id).delete()
+            except:
+                pass
 
     else:
         real_object.like.add(request.user)
         if model_name == 'question': # checking the model to make a valid notid for user 
             Notification.objects.create(
-                user = request.user ,
+                user = real_object.user ,
                 type ='question liked',
-                body = f'your question: {real_object.body[0:50]} was liked by someone ',
+                body = f'your question: {real_object.body[0:50]} was liked by {request.user} ',
                 object= real_object)
         else :
             Notification.objects.create(
-                user = request.user,
+                user = real_object.user,
                 type ='answer liked',
-                body = f'your answer: {real_object.body[0:50]} was liked by someone ',
+                body = f'your answer: {real_object.body[0:50]} was liked by {request.user} ',
                 object= real_object.question_id)
 
     return HttpResponseRedirect(reverse('blog:question-detail',args = [id_to_question , slug_to_question]))
@@ -297,9 +307,9 @@ class WriteAnswer(CreateView):
             question= get_object_or_404(Question, id = pk)
             answer.save()
             Notification.objects.create(
-                user = request.user ,
+                user = answer.user ,
                 type ='question answered',
-                body = f'your question: {answer.question_id.body[0:50]} was answered by {answer.user} ',
+                body = f'your question: {answer.question_id.body[0:50]} was answered by {request.user} ',
                 object= answer.question_id)
 
             form = AnswerForm()
@@ -374,12 +384,68 @@ class DeleteComment(DeleteView):
 
 @method_decorator(login_required, name = 'dispatch')
 class ListReport(ListView):
-    model = Report
     template_name = 'blog/all-reports.html'
     context_object_name = 'reports'
+    queryset = Report.objects.filter(active= True)
     ordering= ['-report_date']
     paginate_by = 5
-  
+
+def report_detail(request,*args, **kwargs):
+    template_name = 'blog/report-detail.html'
+    context = {}
+    report = get_object_or_404(Report , pk = kwargs['pk'])  
+    all_reports = Report.objects.filter(Q(question__id =report.object_id)
+                                        | Q(answer__id = report.object_id) 
+                                        | Q(question_comment__id= report.object_id) ).exclude(id = report.id)
+
+    numbers = all_reports.count()
+    context["main_report"]= report 
+    context["all_reports"] = all_reports 
+    context["numbers"] = numbers
+    return render(request , template_name , context)
+
+class ReportValid(TemplateView):
+    template_name = 'blog/report-valid.html'
+    succes_url = reverse_lazy('blog:all-reports')
+    success_message = "the case successfuly deactived and the notif was send"
+    def post(request, *args, **kwargs):
+        report = Report.objects.get(pk= kwargs['pk']) # was about to delete it but it is said that the data is priceless so why dont store it
+        subject = report.content_object # subject is the casse which has been reported (question, comment, answer), we take it here inorder to deactive that 
+        subject= False        
+        Notification.objects.create(
+            user = report.content_object.user ,
+            type ='action reported',
+            body = f'your action: {report.content_object} was blocked because it was reported by users. if you have problem with this action contant us by the contact us form.')
+        all_reports = Report.objects.filter(Q(question__id =report.object_id)
+                                            | Q(answer__id = report.object_id) 
+                                            | Q(question_comment__id= report.object_id) )
+
+        t = all_reports.count()
+        for rpt in all_reports:
+            rpt.active = False
+            rpt.save()
+            Notification.objects.create(
+                user = rpt.reporter ,
+                type ='action reported',
+                body = f'The case that you reported: {report.content_object} helped us to determine an invalid action, thank you dear : {rpt.reporter}',)
+        return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
+
+
+
+
+class ReportInValid(TemplateView):
+    template_name= 'blog/report-invalid.html'
+    success_url = reverse_lazy('blog:all-reports')
+    success_message = "the report case was ignored "
+    def post(request, *args, **kwargs):
+        report = Report.objects.get(pk= kwargs['pk'])
+        all_reports = Report.objects.filter(Q(question__id =report.object_id) 
+                                            | Q(answer__id = report.object_id) 
+                                            | Q(question_comment__id= report.object_id) )
+        for rpt in all_reports:
+            rpt.active = False
+            rpt.save()
+        return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
 
 @method_decorator(login_required, name = 'dispatch')
 class CreateReport(CreateView):
@@ -392,24 +458,32 @@ class CreateReport(CreateView):
 
     def post(self, request, *args, **kwargs):
         form = ReportForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() or request.user in all_reports :
             report = form.save(commit=False)
             report.reporter = request.user
             report.content_type =ContentType.objects.get(app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())# note that all the app and model name msut be lowercase 
             report.object_id = self.kwargs['pk']
             report.detail = form.cleaned_data.get('detail')
             report.reason = form.cleaned_data.get('reason')
-            report.save()
+
+            try:
+                report.save()
+            except:
+                return HttpResponse('you have reported this case once , wait until we handle it')
+                
             subject = f'Your {report.content_type.model} hase been reported'
             html_content = render_to_string('blog/report_mail.html', {'report':report})
             text_content= strip_tags(html_content)
             recepient = str(report.content_object.user.email)
-            send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
+            # send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:questions')) 
         
 
+
+
+# it seems that we dont this cause we dont delete the report just deactive it but keeping it in case of need
 class DeleteReport(DeleteView):
     model = Report
     template_name = 'blog/delete-report.html'

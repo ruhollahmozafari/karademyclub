@@ -1,5 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
+
 {% block content %}
 
   <div class="container">    
@@ -30,15 +31,55 @@
     {% endif %}
   </div>
 
-               
-                {% for notif  in notifs  %}
-                <div class="container"> 
-                <div class="alert alert-primary" role="alert">
-                <a href="{{notif.get_absolute_url}}" role= "button" class="btn btn-outline-primary btn-sm"> check it out </a>
-                {{ notif.body }}
-                </div>
+    {% if notifs  %}
+    
+                    {% for notif  in notifs  %}
+                {% if request.user == notif.user %}
                 
+                    {% if notif.view <= 1 %}
+                      <div class="container"> 
+                      <div class="alert bg-success alert-succes" role="alert">
+                     {% if  notif.type != 'action reported' %}
+                      <a href="{{notif.get_absolute_url}}" role= "button" class="btn btn-outline-light btn-sm"> check it out </a>
+                      {{ notif.body }}
+                      {% else %}
+                      <p>
+                      {{ notif.body }}
+                        </p>
+                      {% endif %}
 
+                      </div>
+                      </div>
+
+                    {% else %}
+                      <div class="container"> 
+                      <div class="alert  bg-secondary  text-light" role="alert">
+                      {% if  notif.type != 'action reported' %}
+                      <a href="{{notif.get_absolute_url}}" role= "button" class="btn btn-outline-light btn-sm"> check it out </a>
+                      {{ notif.body }}
+                      {% else %}
+                    <p>
+                      {{ notif.body }}
+                    </p>
+
+                      {% endif %}
+
+                      </div>
+                      </div>
+
+                      {% endif %}
+
+                  {% endif %}
+                  
                 {% endfor %}
+    {% else %}
+<h3 class = "text-center">
+    Your are new and your InBox in clean,You can see all the notifications about questions you asked or answered here, we try to keep you updated
+
+</h3>    
+    {% endif %}
+
 
 {% endblock %}
+
+

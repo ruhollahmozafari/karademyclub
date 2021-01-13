@@ -153,11 +153,19 @@ def logout(request):
         auth.logout(request)
     return render(request, 'registration/logout.html')
 
+
 class NotificationView(ListView):
     template_name = 'clubuser/my_notifs.html'
     context_object_name = 'notifs'
     def get_queryset(self):
-        user1 = get_object_or_404(User, pk = self.kwargs['pk'])
-        return Notification.objects.filter(user = user1)
+        notifs =Notification.objects.filter(user__pk = self.kwargs['pk']).order_by('-created_date')
+        for notif in notifs:
+            if notif.view < 2 :
+                notif.view += 1
+            notif.save()
+        return notifs
 
-        
+
+
+
+

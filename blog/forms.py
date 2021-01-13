@@ -8,7 +8,7 @@ class Ask(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ('title', 'body', 'category')
+        fields = ('title', 'body', 'category',)
         widgets = {
             'title' : forms.TextInput(attrs={
                 'cols': 10, 'rows': 10,

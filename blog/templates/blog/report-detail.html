@@ -1,0 +1,102 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+.card {
+padding-left: 20px;
+padding-right: 20px;
+box-shadow: 0 0px 20px 0 rgba(0,0,0,0.2);
+background-color: rgba(0,0,0,0.2);
+transition: 0.3s;}
+{% block content %}
+  <div class="container">
+
+    {% if messages %}
+        <h4>Messages</h4>
+    {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+    <div class="alert alert-primary" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+  </div>
+
+
+
+<h1 class = "text-center" >report case detail</h1>
+{% if request.user.is_staff  %}
+<div class="card bg-danger text-white">
+  <div class="card-header">
+  {{main_report.reporter}}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"> reason: {{main_report.reason}} </h5>
+    <p class="card-text"> detail : {{main_report.detail|safe}}</p>
+    <p> reported case: {{main_report.content_object}} </p>
+    
+<a href="{% url 'blog:report-detail' main_report.pk %}"  class="btn btn-outline-light btn-sm" role="button" aria-pressed="true" >see the case</a>
+  </p>
+   <p> time:{{main_report.report_date}} </p>
+  
+</div>
+</div>
+ <br/><be>
+          <hr>
+          <br/>
+
+
+{% if numbers >= 2 %}
+<h4> the numbers of reports for this case : {{numbers}}, following:</h4>
+
+{% for report  in all_reports  %}
+
+{% if not report.active %}
+<div class="card bg-secondary text-white ">
+{% else %}
+<div class="card bg-danger text-black ">
+{% endif %}
+
+  <div class="card-header">
+  {{report.reporter}}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"> reason: {{report.reason}} </h5>
+    <p class="card-text"> detail : {{report.detail|safe}}</p>
+    <p> reported case: {{report.content_object}} </p>
+<a href="{% url 'blog:report-detail' report.pk %}"  class="btn btn-outline-light btn-sm" role="button" aria-pressed="true" >see the case</a>
+  </p>
+   <p> time:{{report.report_date}} </p>
+  
+</div>
+</div>
+
+ <br/><be>
+          <hr>
+          <br/>
+{%endfor%}
+{% endif %}
+{% endif %}
+<p class ='text-center'>
+<a href="{% url 'blog:report-valid' main_report.pk %}"  class="btn btn-outline-Danger btn-large" role="button" aria-pressed="true" >report valid :(deactive the case)</a>
+<a href="{% url 'blog:report-invalid' main_report.pk %}"  class="btn btn-outline-primary btn-large" role="button" aria-pressed="true" >report not valid(ignore)</a>
+</p>
+
+
+
+{% endblock %}
+

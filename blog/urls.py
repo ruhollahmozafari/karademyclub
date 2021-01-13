@@ -9,7 +9,7 @@ app_name='blog'
 from django.core.paginator import Paginator
 
 urlpatterns = [
-    path('',TemplateView.as_view(template_name = 'blog/home_page.html'), name = 'home'),
+    path('',HomeView.as_view(), name = 'home'),
     path('questions/', ArchiveIndexView.as_view(model=Question, date_field="created_date", paginate_by = 5), name= 'questions'),
     path('questions/<int:pk>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',QuestionsInCategories.as_view(), name = 'questions-in-categories'),
@@ -31,6 +31,10 @@ urlpatterns = [
     path('delete-comment/<int:pk>/', DeleteComment.as_view(), name = 'delete-comment'),
     path('update-comment/<int:pk>/', UpdateComment.as_view(), name = 'update-comment'),
     path('search-question/', SearchResultView.as_view() , name = 'search-results'),
+    path('report-detail/<int:pk>/', report_detail , name = 'report-detail'),
+    path('report-valid/<int:pk>/' , ReportValid.as_view(), name = 'report-valid' ),
+    path('report-invalid/<int:pk>/', ReportInValid.as_view(), name = 'report-invalid'),
+
 
 ]
  

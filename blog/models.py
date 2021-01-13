@@ -10,7 +10,31 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MinValueValidator, MaxValueValidator
 
+class Report(models.Model):
+    REPORT_REASONS = (
+        ("not related to programing" ,"not related to programing"),
+        ("insulting","insulting"),
+        ("sexual content",'sexual content'),
+        ("wrong answer","wrong answer"),
+        ("inappropriate","inappropriate"),
+        ("other","other"),
+    )
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    content_type = models.ForeignKey(ContentType,on_delete= models.CASCADE, default= None)
+    object_id = models.PositiveIntegerField(default = None)
+    content_object = GenericForeignKey('content_type', 'object_id')
+    detail = models.CharField(max_length=200, null= True , blank = True, default ='')
+    reason = models.CharField(max_length=35, choices=REPORT_REASONS, default='publish')
+    report_date = models.DateTimeField(auto_now_add= True , null= True)
+    active = models.BooleanField(default =True)
+
+    class Meta:
+        unique_together = ('reporter', 'content_type','object_id')
+
+    def __str__(self):
+        return str(self.content_object)
 
 
 class Category (models.Model):
@@ -49,12 +73,15 @@ class Question(models.Model):
     slug = models.SlugField(blank= True , null=True, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     body = RichTextField(blank= True , null=True)
-    published = models.BooleanField(default=True, )
+    active = models.BooleanField(default=True, )
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
     like= models.ManyToManyField(User,related_name= 'like_question')
     category = models.ForeignKey(Category,null=True,  on_delete=models.SET_NULL)# this is the category dont worry about the name 
-    tag = models.ManyToManyField(Tag, blank= True)   
+    tag = models.ManyToManyField(Tag, blank= True)
+    reports = GenericRelation(Report ,related_query_name="question")
+
+
 
     @property
     def views_count(self):
@@ -88,10 +115,11 @@ class Answer(models.Model):
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE, related_name= 'anwers_of_question')
     user = models.ForeignKey(User ,default= None ,null =True, on_delete=models.CASCADE)
     body = body = RichTextField()
-    published = models.BooleanField(default=True, )
+    active = models.BooleanField(default=True, )
     created_date = models.DateTimeField(auto_now_add= True,)
     updated_date = models.DateTimeField(auto_now= True)
     like =models.ManyToManyField(User,related_name='like_answer')
+    reports = GenericRelation(Report ,related_query_name="answer")
 
     class Meta :
         pass
@@ -104,25 +132,6 @@ class Answer(models.Model):
         return reverse("blog:question-detail",args=[self.question_id.pk , str(self.question_id.slug)])
 
 
-class Report(models.Model):
-    REPORT_REASONS = (
-        ("not related to programing" ,"not related to programing"),
-        ("insulting","insulting"),
-        ("sexual content",'sexual content'),
-        ("wrong answer","wrong answer"),
-        ("inappropriate","inappropriate"),
-        ("other","other"),
-    )
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
-    content_type = models.ForeignKey(ContentType,on_delete= models.CASCADE, default= None)
-    object_id = models.PositiveIntegerField(default = None)
-    content_object = GenericForeignKey('content_type', 'object_id')
-    detail = models.CharField(max_length=200, null= True , blank = True, default ='')
-    reason = models.CharField(max_length=35, choices=REPORT_REASONS, default='publish')
-    report_date = models.DateTimeField(auto_now_add= True , null= True)
-
-    def __str__(self):
-        return str(self.content_object)
 
         
 class QuestionComment(models.Model):
@@ -130,39 +139,43 @@ class QuestionComment(models.Model):
     question = models.ForeignKey(Question,null= True ,on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add= True)
     body = models.CharField(max_length=200, null= True , blank = True, default ='')
+    reports = GenericRelation(Report ,related_query_name="question_comment")
+    active = models.BooleanField(default = True)
     def __str__(self):
         return str(self.body)
     def get_absolute_url(self):
         return reverse("blog:question-detail",args=[self.question.pk , str(self.question.slug)])
 
 
+
 class Notification(models.Model):
     notification_type = (
         ("question liked" ,"question likedd"),
         ("answer liked","answer liked"),
-        ("question reported",'question reported'),
-        ("answer reported","answer reported"),
-        ("comment reported","comment reported"),
+        ("action reported","action reported"),
         ("question answered","question answered"),
         ("question commented","question commented"),
+    
     )
 
     user =models.ForeignKey(User, on_delete=models.CASCADE)
     type = models.CharField(max_length=35, choices= notification_type, default= '', blank = True)
-    read = models.BooleanField(default = False)
+    # view was declared inorder to track if the notif has read by the user .
+    view = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(4)], default=0)#zero == not read / one == is reading (or delivered)/ two == read
     body = models.CharField(max_length = 500 ,default='', blank = True)
-    object = models.ForeignKey(Question, on_delete=models.CASCADE)
+    object = models.ForeignKey(Question, null = True, on_delete=models.CASCADE)
     created_date = models.DateField(auto_now=True)
 
     #Since all the question, answer, comment are in one signle page(blog:question-detail) the object be > 
     # >the question instance to make the redirect easier and also the get_absolute_url goes to related question 
     # > also note that in all the view while we are creating a notif the object of instance must be a question instance
     # > the profile report will be managed later 
-    def get_absolute_url(self):
-        return reverse("blog:question-detail", kwargs={"pk": self.object.pk, "slug": self.object.slug})
-
-
     
+    def get_absolute_url(self):
+        try :
+            return reverse("blog:question-detail", kwargs={"pk": self.object.pk, "slug": self.object.slug})
+        except:
+            return reverse("blog:questions")
 
-
-
+    def __str__(self):
+        return self.body
