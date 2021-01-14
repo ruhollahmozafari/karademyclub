@@ -23,6 +23,12 @@ from django.utils.html import strip_tags
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Min, Max, Avg, Q
 
+class QuestionsList(ListView):
+    paginate_by = 5
+    template_name = 'blog/question_archive.html'
+    queryset = Question.objects.filter(active= True) 
+
+
 class HomeView(TemplateView):
     template_name = 'blog/home_page.html'
 
@@ -140,9 +146,9 @@ class QuestionDetail(DetailView):
         self.obj= get_object_or_404(Question, id = self.kwargs['pk'])
         self.object.save()
         self.object.refresh_from_db()
-        answers = Answer.objects.filter (question_id = self.obj.id).order_by('-created_date')
+        answers = Answer.objects.filter (question_id = self.obj.id, active=True).order_by('-created_date')
         liked =self.obj.like.filter(id =self.request.user.id).exists()
-        comments= QuestionComment.objects.filter(question = self.kwargs['pk'])
+        comments= QuestionComment.objects.filter(question = self.kwargs['pk'], active=True)
         context['comments']= comments
         context["answers"]=answers
         context["liked "] = liked
@@ -411,7 +417,16 @@ class ReportValid(TemplateView):
     def post(request, *args, **kwargs):
         report = Report.objects.get(pk= kwargs['pk']) # was about to delete it but it is said that the data is priceless so why dont store it
         subject = report.content_object # subject is the casse which has been reported (question, comment, answer), we take it here inorder to deactive that 
-        subject= False        
+        subject.active= False        
+        subject.save()
+
+        # sending warning email to the user of the case and tell them the reason for reporting
+        subject = f'Your {report.content_type.model} hase been reported'
+        html_content = render_to_string('blog/report_mail.html', {'report':report})
+        text_content= strip_tags(html_content)
+        recepient = str(report.content_object.user.email)
+        send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
+
         Notification.objects.create(
             user = report.content_object.user ,
             type ='action reported',
@@ -431,8 +446,6 @@ class ReportValid(TemplateView):
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
 
 
-
-
 class ReportInValid(TemplateView):
     template_name= 'blog/report-invalid.html'
     success_url = reverse_lazy('blog:all-reports')
@@ -447,6 +460,7 @@ class ReportInValid(TemplateView):
             rpt.save()
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
 
+
 @method_decorator(login_required, name = 'dispatch')
 class CreateReport(CreateView):
     template_name = 'blog/create-report.html'
@@ -454,7 +468,12 @@ class CreateReport(CreateView):
 
     def get(self, request ,*args,**kwargs ):
         form = ReportForm()
-        return render(request, 'blog/create-report.html',{'form': form})
+        content_type =ContentType.objects.get(app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())# note that all the app and model name msut be lowercase 
+        object_id = self.kwargs['pk']
+        if Report.objects.filter(content_type = content_type , object_id = object_id, reporter = request.user).exists():
+            return render (request, 'blog/duplicate-report.html')
+        else:
+            return render(request, 'blog/create-report.html',{'form': form})
 
     def post(self, request, *args, **kwargs):
         form = ReportForm(request.POST)
@@ -465,23 +484,17 @@ class CreateReport(CreateView):
             report.object_id = self.kwargs['pk']
             report.detail = form.cleaned_data.get('detail')
             report.reason = form.cleaned_data.get('reason')
+            report.save()
+            # sending a notif for user that you got a comment for your question
+            Notification.objects.create(
+                    user = report.reporter,
+                    type ='action reported',
+                    body = f'We have received your report for the case{report.content_object.body[0:15]}, we will dispose it in no time.Thank you for supporting us',)
 
-            try:
-                report.save()
-            except:
-                return HttpResponse('you have reported this case once , wait until we handle it')
-                
-            subject = f'Your {report.content_type.model} hase been reported'
-            html_content = render_to_string('blog/report_mail.html', {'report':report})
-            text_content= strip_tags(html_content)
-            recepient = str(report.content_object.user.email)
-            # send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
             form= Ask()
             messages.success(request, "report succesfully created, we will respond to your ")
         return HttpResponseRedirect(reverse_lazy('blog:questions')) 
         
-
-
 
 # it seems that we dont this cause we dont delete the report just deactive it but keeping it in case of need
 class DeleteReport(DeleteView):

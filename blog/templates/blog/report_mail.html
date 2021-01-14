@@ -1,4 +1,4 @@
-<h1> This is your reported object, please check it to prevent furthur contention </h1>
+<h1> Your {{report.content_type.model}} was reproted against our policy, we had no choice except to put your {{report.content_type.model}} into draft </h1>
 
 {% block content %}
 <div class="card">
@@ -6,9 +6,10 @@
    {{report.content_object}}
   </div>
   <div class="card-body">
-    <h5 class="card-title">{{report.reason}} </h5>
-    <p class="card-text">{{report.detail|safe}}</p>
-      <p class="card-footer text-muted"> {{report.content_object.body}} </p>
+   <p class="card-footer text-muted"> case: {{report.content_object.body|safe}} </p>
+    <h5 class="card-title">reason : {{report.reason}} </h5>
+    <p class="card-text">detial : {{report.detail|safe}}</p>
+     
 </div>
 </div>
 

@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 
 urlpatterns = [
     path('',HomeView.as_view(), name = 'home'),
-    path('questions/', ArchiveIndexView.as_view(model=Question, date_field="created_date", paginate_by = 5), name= 'questions'),
+    path('questions/', QuestionsList.as_view(), name= 'questions'),
     path('questions/<int:pk>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
     path('questions-in-categories/<str:slug>/',QuestionsInCategories.as_view(), name = 'questions-in-categories'),
     path('questions-in-tag/<str:slug>/',QuestionsInTags.as_view(), name = 'questions-in-tags'),

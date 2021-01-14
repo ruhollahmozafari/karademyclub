@@ -8,12 +8,9 @@ from blog.forms import *
 
 
 class SignUpForm(UserCreationForm):# treid it by inheriting from UserCreationForm and see what will happen use this link : https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
-    interest = forms.ModelChoiceField(required=False, queryset= Category.objects.all(), widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-control',
-            'dir': 'rtl',
-            'placeholder': 'interest'
-        }), label='choose what interest you ?')
+    interest = forms.ModelChoiceField(queryset= Category.objects.all())
     image = forms.ImageField( required= False)
+
 
     class Meta:
         model = User
@@ -24,7 +21,6 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("username", "first_name","last_name","email",)
-
 
 
 class ClubUserUpdateForm(forms.ModelForm):

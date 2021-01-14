@@ -96,8 +96,9 @@ class UserCreation(CreateView):
             new_user.save()
             new1 = ClubUser.objects.create(user = new_user)
             new1.interest.add(interest1)
-            new1.profile_image = signup_form.cleaned_data.get('image')# adding picture failed, any suggestion ?
+            new1.profile_image = signup_form.cleaned_data.get('image')
             new1.save()
+            #sending email to the new user to say welcome
             subject = f'Welcome to karademy dear {new_user.first_name},'
             message = f'You can improve your skill and knowledge in this community, It is a honnor to have you here.' 
             recepient = str(new_user.email)
