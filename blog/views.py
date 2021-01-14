@@ -218,7 +218,7 @@ def update_question(request, pk ):
         instance.category = form.cleaned_data.get('category')
         tag_list= form.cleaned_data.get('tag_char')
         instance.tag.all().delete() # delete the previous tags in order not to save new ones over the old ones
-        tag_list = tag_list.split()
+        tag_list = tag_list.split() 
         for item in tag_list:
             if Tag.objects.filter(title = item).exists():
                 temp_tag = Tag.objects.get(title = item)
@@ -234,22 +234,25 @@ def update_question(request, pk ):
     if request.method=='GET':
         tags = instance.tag.all()
         t_char = f''
-        for tag in tags:
+        for tag in tags: 
             t_char += str(tag) 
             t_char+=' '
         init_title = instance.title
         init_body = instance.body
         init_category = instance.category
         init_tag = t_char
+
         initial_dict = {
             'title':init_title,
             'body':init_body,
             'category':init_category,
             'tag_char': t_char,
         }
+
         form = UpdateQuestionForm(
             initial = initial_dict) 
         context['form']= form 
+        context['question']= instance
         return render(request, "blog/update_question.html", context) 
 
 

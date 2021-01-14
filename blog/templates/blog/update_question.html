@@ -15,7 +15,7 @@
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
-{% comment %} <a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a> {% endcomment %}
+<a href="{% url 'blog:delete-question' question.pk %}" role="button" class="btn btn-danger btn-large">delete this question</a>
 {% else %}
 <h3>the question is not yours to edit</h3>
 {% endif %}

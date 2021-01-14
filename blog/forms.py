@@ -22,7 +22,6 @@ class UpdateQuestionForm(forms.ModelForm):
 
     class Meta :
         model =Question
-        # init_tags = Tag.objects.filter(question = self)
 
         fields = ('title', 'body', 'category', 'tag_char')
 
