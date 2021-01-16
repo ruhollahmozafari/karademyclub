@@ -46,9 +46,9 @@
                   <img src="{{ question.user.clubuser.image_url}}" alt="{% static '/default.jpeg' %}" class="rounded-circle" width="50">
    </a>
                 <div class="card-body">
-                  <h5 class="card-title">{{ question.title}}</h5>
+                  <h5 class="card-title">{{ question.title_snippets}}</h5>
                   <h6 class="card-subtitle mb-2 text-muted">{{cat}}</h6>
-                  <p class="card-text">{{ question.body|truncatewords:5|safe }}</p>
+                  <p class="card-text">{{ question.body_snippets|safe}}</p>
                   <p >  Views: {{question.views_count}} </p>
                   <p> likes: {{question.like.count}}</p>
                   

@@ -218,7 +218,7 @@ def update_question(request, pk ):
         instance.category = form.cleaned_data.get('category')
         tag_list= form.cleaned_data.get('tag_char')
         instance.tag.all().delete() # delete the previous tags in order not to save new ones over the old ones
-        tag_list = tag_list.split() 
+        tag_list = tag_list.lower().split() 
         for item in tag_list:
             if Tag.objects.filter(title = item).exists():
                 temp_tag = Tag.objects.get(title = item)
@@ -276,7 +276,7 @@ class QuestionCreate(CreateView):
             question.user = request.user
             question.save()
             tag_list= form.cleaned_data.get('tag_char')
-            tag_list = tag_list.split()
+            tag_list = tag_list.lower().split()
             for item in tag_list:
                 if Tag.objects.filter(title = item).exists():
                     temp_tag = Tag.objects.get(title = item)

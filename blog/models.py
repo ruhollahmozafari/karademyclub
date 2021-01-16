@@ -69,10 +69,10 @@ class Tag(models.Model):
 
 
 class Question(models.Model):
-    title = models.CharField(max_length=1000,  )
-    slug = models.SlugField(blank= True , null=True, default='')
+    title = models.TextField(max_length= 255 )
+    slug = models.SlugField(blank= True , null=True, default='', max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    body = RichTextField(blank= True , null=True)
+    body = RichTextField(max_length= 15000,blank= True , null=True)
     active = models.BooleanField(default=True, )
     created_date = models.DateTimeField(auto_now_add= True,null = True)
     updated_date = models.DateTimeField(auto_now= True, null =True)
@@ -101,6 +101,12 @@ class Question(models.Model):
 
     def get_absolute_url(self):
         return reverse("blog:question-detail",args=[self.pk , str(self.slug)])
+
+    def body_snippets(self):
+        return self.body[0:35]
+
+    def title_snippets(self):
+        return self.title[0:15]
 
 
 class QuestionViews(models.Model):

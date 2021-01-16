@@ -1,7 +1,18 @@
 {% extends 'layouts/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+@media (min-width: 768px)
+.card-body {
+  font-size: 3vw;
+  word-break: keep-all !important;
+}
 {% block content %}
+
+
+
+
+
+
   <div class="container">
     
     {% if messages %}
@@ -35,7 +46,7 @@
 
 <div class ="d-flex">
 
-    <div class="card" style="width: 69.5rem; height: 17rem">
+    <div class="card" style="width: 69.5rem">
 
         <h5 class="card-header">  
                   {% for tag in question.tag.all %} 
