@@ -45,7 +45,7 @@ class SearchResultView(ListView):
         | Q(category__title__icontains = self.keyword )).order_by('-created_date')
         
         return object_list
-
+ 
 @login_required
 def question_comment(request, *args, **kwargs):
     context ={}
@@ -405,7 +405,8 @@ def report_detail(request,*args, **kwargs):
     report = get_object_or_404(Report , pk = kwargs['pk'])  
     all_reports = Report.objects.filter(Q(question__id =report.object_id)
                                         | Q(answer__id = report.object_id) 
-                                        | Q(question_comment__id= report.object_id) ).exclude(id = report.id)
+                                        | Q(question_comment__id= report.object_id) 
+                                        ).exclude(id = report.id)
 
     numbers = all_reports.count()
     context["main_report"]= report 

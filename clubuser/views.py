@@ -17,7 +17,6 @@ from django.contrib.auth import login as auth_login
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User
 from django.db.models.query_utils import Q
 from django.utils.http import urlsafe_base64_encode
@@ -76,6 +75,7 @@ def profile(request, pk):
         "questions":questions,
     }
     return render(request, 'clubuser/user_profile.html', context)
+
 
 class MyQuestion(ListView):
     model = Question

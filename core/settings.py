@@ -22,7 +22,7 @@ from django.urls import reverse ,reverse_lazy
 SECRET_KEY = 'uxue^o$o019fia$nb3l-z*irh9(f*z$^_55k1*nsg0xqoj^c5)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
