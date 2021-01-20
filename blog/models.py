@@ -185,3 +185,7 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.body
+class ContactUs(models.Model):
+    name = models.CharField(max_length=50, default= '')
+    email = models.EmailField(max_length=254, blank=True)
+    body = models.TextField( blank = True)

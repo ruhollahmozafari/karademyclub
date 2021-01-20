@@ -1,5 +1,5 @@
-a<!DOCTYPE html>
-
+<!DOCTYPE html>
+{% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
 
@@ -196,11 +196,13 @@ a<!DOCTYPE html>
                     
                   </div>
                   <hr>
-                  <a  href= "{% url 'clubuser:my-questions' user.pk %}" role="button" class="btn btn-primary btn-large" >my questions</a>
-
+                  {% if request.user == profile.user %}
+                                    <a  href= "{% url 'clubuser:my-questions' user.pk %}" role="button" class="btn btn-primary btn-large" >my questions</a>
                   <p class ="text-left">
                   <a   href= "{% url 'clubuser:my-notifs' user.pk %}" role="button" class="btn btn-primary btn-Info"> Notif Box</a>
-                  </p>
+                  </p>{% endif %}
+
+
 
 
               {% comment %} <div class="row gutters-sm">

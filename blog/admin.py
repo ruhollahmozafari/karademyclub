@@ -9,5 +9,4 @@ admin.site.register(Report)
 admin.site.register(Tag)
 admin.site.register(QuestionComment)
 admin.site.register(QuestionViews)
-admin.site.register(Notification)
-
+admin.site.register(ContactUs)

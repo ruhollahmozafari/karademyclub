@@ -34,6 +34,7 @@ urlpatterns = [
     path('report-detail/<int:pk>/', report_detail , name = 'report-detail'),
     path('report-valid/<int:pk>/' , ReportValid.as_view(), name = 'report-valid' ),
     path('report-invalid/<int:pk>/', ReportInValid.as_view(), name = 'report-invalid'),
+    path('contact-us/', ContactUs.as_view(), name = 'contact-us'),
 
 
 ]

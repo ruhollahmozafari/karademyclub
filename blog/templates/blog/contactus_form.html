@@ -1,0 +1,14 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+
+    <form method='POST'>
+    {% csrf_token %}
+    {{form.media}}
+      {{form.as_p}}    
+        <input type="submit" value="POST">
+    </form>
+      
+
+
+{% endblock %}

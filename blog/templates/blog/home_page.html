@@ -1,7 +1,9 @@
 {% extends 'layouts/base.html' %}
+{% block content %}
   <div class="container">
-    <h4>Messages</h4>
+
     {% if messages %}
+        <h4>Messages</h4>
     {% for message in messages %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
     <div class="alert alert-primary" role="alert">
@@ -27,10 +29,13 @@
     {% endif %}
   </div>
 
-{% block content %}
+
 
 <h1 class="text-center"> Hello this is a Q&A website</h1>
 
+
+          <br/><be>
+          <br/>
 
 {% endblock %}
 

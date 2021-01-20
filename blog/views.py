@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
 from .forms import *
+from django.contrib.messages.views import SuccessMessageMixin
 from clubuser.forms import *
 from django.views import View
 from django.views.generic import ListView,DetailView,UpdateView, DeleteView, CreateView , TemplateView
@@ -414,7 +415,7 @@ def report_detail(request,*args, **kwargs):
     context["numbers"] = numbers
     return render(request , template_name , context)
 
-class ReportValid(TemplateView):
+class ReportValid(TemplateView,SuccessMessageMixin):
     template_name = 'blog/report-valid.html'
     succes_url = reverse_lazy('blog:all-reports')
     success_message = "the case successfuly deactived and the notif was send"
@@ -450,7 +451,7 @@ class ReportValid(TemplateView):
         return HttpResponseRedirect(reverse_lazy('blog:all-reports'))
 
 
-class ReportInValid(TemplateView):
+class ReportInValid(TemplateView,SuccessMessageMixin):
     template_name= 'blog/report-invalid.html'
     success_url = reverse_lazy('blog:all-reports')
     success_message = "the report case was ignored "
@@ -506,8 +507,17 @@ class DeleteReport(DeleteView):
     template_name = 'blog/delete-report.html'
     success_url = reverse_lazy('blog:all-reports')
 
+# class ContactUs(CreateView):
+#     model = ContactUs
+#     fields = '__all__'
+#     template_name = 'blog/contact_us.html'
 
 
+class ContactUs(SuccessMessageMixin,CreateView):
+    model = ContactUs
+    fields = ['name', 'email', 'body']
+    success_message = 'thank you for sending us message, you comments and opinions are important to us'
+    success_url = reverse_lazy('blog:home')
 
 
 
