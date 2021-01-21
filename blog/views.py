@@ -24,17 +24,21 @@ from django.utils.html import strip_tags
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Min, Max, Avg, Q
 
+
 class QuestionsList(ListView):
+
     paginate_by = 5
     template_name = 'blog/question_archive.html'
     queryset = Question.objects.filter(active= True) 
 
 
 class HomeView(TemplateView):
+
     template_name = 'blog/home_page.html'
 
 
 class SearchResultView(ListView):
+
     model = Question
     template_name = 'blog/search_results.html'
     paginate_by = 5
@@ -43,10 +47,12 @@ class SearchResultView(ListView):
         self.keyword = self.request.GET.get('keywords', None)
         object_list = Question.objects.filter(Q (title__icontains=self.keyword) 
         | Q(tag__title__icontains = self.keyword) 
-        | Q(category__title__icontains = self.keyword )).order_by('-created_date')
+        | Q(category__title__icontains = self.keyword )
+        ).order_by('-created_date')
         
         return object_list
  
+
 @login_required
 def question_comment(request, *args, **kwargs):
     context ={}
@@ -69,19 +75,26 @@ def question_comment(request, *args, **kwargs):
         context['c_form'] = c_form
     return HttpResponseRedirect(reverse_lazy('blog:question-detail',args=[question1.id , question1.slug]))
 
+
 @login_required   
 def LikeCreate(request, *args, **kwargs):
+    #since we have like for quetion and answer and the process is the same,
+    #one function used to handle both.
+    #query for geting the object, eaither question or answer using content_type 
     object_type = ContentType.objects.get(app_label= kwargs['app'], model = kwargs['model'],)
     real_object = object_type.get_object_for_this_type(id = kwargs['pk'])
-    #making a proper id to redirect to question-detail page
+    #making a proper id to redirect to question-detail page(question and answer are different in url)
     model_name = kwargs['model']
+
     if model_name == 'answer': # setting id for answer instance 
         id_to_question= real_object.question_id.id
         slug_to_question = real_object.question_id.slug
     else :                      #setting id for question instance
         id_to_question = real_object.id
         slug_to_question = real_object.slug
-    #creating a like or if it's liked unlike it 
+
+    #liking the the object or if it's liked unlike it
+    #unlike
     if real_object.like.filter(id = request.user.id).exists(): # checking model name to create or delete like for which model
         real_object.like.remove(request.user)
 
@@ -103,7 +116,7 @@ def LikeCreate(request, *args, **kwargs):
                     object= real_object.question_id).delete()
             except:
                 pass
-
+    #like
     else:
         real_object.like.add(request.user)
         if model_name == 'question': # checking the model to make a valid notid for user 
@@ -122,10 +135,33 @@ def LikeCreate(request, *args, **kwargs):
     return HttpResponseRedirect(reverse('blog:question-detail',args = [id_to_question , slug_to_question]))
 
 
+
+def MakeValidAnswer(request,*args, **kwargs):
+
+    answer =get_object_or_404(Answer, id = kwargs['pk'])
+    question = answer.question_id
+
+    if request.user == question.user:
+        print('this is a check '*28)
+        question.valid_answer = answer
+        question.save()
+        messages.success = 'the answer is valid now'
+        # sending notif to owner of the answer
+        Notification.objects.create(
+            user = answer.user,
+            type ='answer validated',
+            body = f'your answer {answer.body[0:20]}  was validated {question.user}',
+            object= question)
+    else:
+        messages.error = 'sorry only the author of the question can make a answer valid'
+    return HttpResponseRedirect(reverse('blog:question-detail', args =[question.id, question.slug]))
+
+        
 class QuestionDetail(DetailView):
     template_name = 'blog/question_detail.html'
     model = Question
     context_object_name = 'question'
+
     def get_client_ip(self, request):
         x_forwarded_for =request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
@@ -141,7 +177,8 @@ class QuestionDetail(DetailView):
         context = super().get_context_data(**kwargs)
         c_form = QuestionCommentForm()
         context = super(QuestionDetail,self).get_context_data(**kwargs)
-        #adding on view based on ip
+
+        #adding view based on ip
         QuestionViews.objects.get_or_create(IPAddres=self.get_client_ip(self.request), question=self.object)
 
         self.obj= get_object_or_404(Question, id = self.kwargs['pk'])
@@ -159,12 +196,14 @@ class QuestionDetail(DetailView):
 
 
 class AllCategories(ListView):
+
     model = Category
     template_name = 'blog/all_categories.html'
     context_object_name = 'categories'
 
 
-class QuestionsInCategories(ListView,): 
+class QuestionsInCategories(ListView,):
+
     model = Category
     template_name = 'blog/questions_in_categories.html'
     context_object_name = 'questions'
@@ -174,6 +213,7 @@ class QuestionsInCategories(ListView,):
     def get_queryset(self,*args, **kwargs):
         self.cat =get_object_or_404(Category, slug = self.kwargs['slug'])
         return Question.objects.filter(category = self.cat)
+
     def get_context_data(self, **kwargs):
         context = super(QuestionsInCategories,self).get_context_data(**kwargs)
         context["main_cat"]= self.cat
@@ -181,6 +221,7 @@ class QuestionsInCategories(ListView,):
 
 
 class AllTags(ListView):
+
     model = Tag
     template_name='blog/all-tags.html'
     context_object_name = 'tags'
@@ -259,6 +300,7 @@ def update_question(request, pk ):
 
 @method_decorator(login_required, name = 'dispatch')
 class QuestionDelete(DeleteView):
+
     model =Question
     template_name = 'blog/delete-question.html'
     success_url = reverse_lazy('blog:questions')
@@ -290,7 +332,7 @@ class QuestionCreate(CreateView):
 
             question.save()
             form= Ask()
-            messages.success(request, "Question succesfully created, wait for your answer ")
+            messages.success(request,"Question succesfully created, wait for your answer ")
         return HttpResponseRedirect(reverse_lazy('blog:questions'))
 
 
@@ -305,7 +347,6 @@ class WriteAnswer(CreateView):
             "question": question_to_answer,
         }
         return render(request, 'blog/answer-question.html',context)
-
 
     def post(self, request,pk):
         form = AnswerForm(request.POST)
@@ -330,7 +371,6 @@ class WriteAnswer(CreateView):
 class DeleteAnswer(DeleteView):
     model = Answer
     template_name = 'blog/delete-answer.html'
-    # success_
     success_url = reverse_lazy('blog:questions')
     def get_context_data(self,*args, **kwargs): # to delete the notif for created answer in WriteAnswer
         context = super().get_context_data(**kwargs)
@@ -353,6 +393,7 @@ class UpdateAnswer(UpdateView):
     fields = ['body']
     success_url= reverse_lazy('blog:questions')
 
+
 @method_decorator(login_required, name = 'dispatch')
 class UpdateComment(UpdateView):
     model=QuestionComment
@@ -367,7 +408,8 @@ class UpdateComment(UpdateView):
         context["question"] = question
         context["comment"] =comment 
         return context
-        
+
+
 @method_decorator(login_required, name = 'dispatch')
 class DeleteComment(DeleteView):
     model = QuestionComment
@@ -394,11 +436,13 @@ class DeleteComment(DeleteView):
 
 @method_decorator(login_required, name = 'dispatch')
 class ListReport(ListView):
+
     template_name = 'blog/all-reports.html'
     context_object_name = 'reports'
     queryset = Report.objects.filter(active= True)
     ordering= ['-report_date']
     paginate_by = 5
+
 
 def report_detail(request,*args, **kwargs):
     template_name = 'blog/report-detail.html'
@@ -415,13 +459,17 @@ def report_detail(request,*args, **kwargs):
     context["numbers"] = numbers
     return render(request , template_name , context)
 
+
 class ReportValid(TemplateView,SuccessMessageMixin):
     template_name = 'blog/report-valid.html'
     succes_url = reverse_lazy('blog:all-reports')
     success_message = "the case successfuly deactived and the notif was send"
+
     def post(request, *args, **kwargs):
-        report = Report.objects.get(pk= kwargs['pk']) # was about to delete it but it is said that the data is priceless so why dont store it
-        subject = report.content_object # subject is the casse which has been reported (question, comment, answer), we take it here inorder to deactive that 
+        # was about to delete it but it is said that the data is priceless so why dont store it
+        report = Report.objects.get(pk= kwargs['pk']) 
+        # subject is the cass which has been reported (question, comment, answer), we take it here inorder to deactive that 
+        subject = report.content_object 
         subject.active= False        
         subject.save()
 
@@ -431,7 +479,8 @@ class ReportValid(TemplateView,SuccessMessageMixin):
         text_content= strip_tags(html_content)
         recepient = str(report.content_object.user.email)
         send_mail(subject, text_content, 'ruhytest@gmail.com', [recepient], fail_silently = True)
-
+        
+        #sending notif
         Notification.objects.create(
             user = report.content_object.user ,
             type ='action reported',
@@ -440,7 +489,6 @@ class ReportValid(TemplateView,SuccessMessageMixin):
                                             | Q(answer__id = report.object_id) 
                                             | Q(question_comment__id= report.object_id) )
 
-        t = all_reports.count()
         for rpt in all_reports:
             rpt.active = False
             rpt.save()
@@ -475,8 +523,10 @@ class CreateReport(CreateView):
         form = ReportForm()
         content_type =ContentType.objects.get(app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())# note that all the app and model name msut be lowercase 
         object_id = self.kwargs['pk']
+        #redirect and show error message to prevent duplicate report
         if Report.objects.filter(content_type = content_type , object_id = object_id, reporter = request.user).exists():
-            return render (request, 'blog/duplicate-report.html')
+            messages.error(request,'you have already reported this case please be patient and let us to hadle it')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             return render(request, 'blog/create-report.html',{'form': form})
 
@@ -485,7 +535,9 @@ class CreateReport(CreateView):
         if form.is_valid() or request.user in all_reports :
             report = form.save(commit=False)
             report.reporter = request.user
-            report.content_type =ContentType.objects.get(app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())# note that all the app and model name msut be lowercase 
+            report.content_type =ContentType.objects.get(
+                app_label= self.kwargs['app'].lower(), model =(self.kwargs['model']).lower())
+                # note that all the app and model name must be lowercase 
             report.object_id = self.kwargs['pk']
             report.detail = form.cleaned_data.get('detail')
             report.reason = form.cleaned_data.get('reason')
@@ -503,21 +555,22 @@ class CreateReport(CreateView):
 
 # it seems that we dont this cause we dont delete the report just deactive it but keeping it in case of need
 class DeleteReport(DeleteView):
+
     model = Report
     template_name = 'blog/delete-report.html'
     success_url = reverse_lazy('blog:all-reports')
 
-# class ContactUs(CreateView):
-#     model = ContactUs
-#     fields = '__all__'
-#     template_name = 'blog/contact_us.html'
-
 
 class ContactUs(SuccessMessageMixin,CreateView):
+    
     model = ContactUs
     fields = ['name', 'email', 'body']
     success_message = 'thank you for sending us message, you comments and opinions are important to us'
     success_url = reverse_lazy('blog:home')
+
+
+
+
 
 
 

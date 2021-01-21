@@ -7,11 +7,17 @@ from PIL import Image
 
 class ClubUser(models.Model):
     gender_choices={('male','آقا'),('woman','خانم')}
-
     user = models.OneToOneField(User,default=None, on_delete= models.CASCADE ,)
     profile_image = models.ImageField(null=True ,default = 'default.jpeg',upload_to = 'profile_pics')
     interest = models.ManyToManyField("blog.Category" ,blank= True)
-    
+    #Social media info
+    website = models.CharField(max_length=50,blank=True, null= True, default='')
+    instagram = models.CharField(max_length=50,blank=True, null= True, default='')
+    twitter = models.CharField(max_length=50,blank=True, null= True, default='')
+    facebook = models.CharField(max_length=50,blank=True, null= True, default='')
+    github = models.CharField(max_length=50,blank=True, null= True, default='')
+
+
     def __str__(self): 
             return str(self.user.get_username())
     @property

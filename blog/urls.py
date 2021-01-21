@@ -35,6 +35,7 @@ urlpatterns = [
     path('report-valid/<int:pk>/' , ReportValid.as_view(), name = 'report-valid' ),
     path('report-invalid/<int:pk>/', ReportInValid.as_view(), name = 'report-invalid'),
     path('contact-us/', ContactUs.as_view(), name = 'contact-us'),
+    path('valid-answer/<int:pk>/', MakeValidAnswer, name = 'valid-answer'),
 
 
 ]

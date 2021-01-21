@@ -27,6 +27,6 @@ class ClubUserUpdateForm(forms.ModelForm):
     class Meta:
         model = ClubUser
         fields = [
-            "interest","profile_image",
+            "interest","profile_image","website", "github", "twitter", "instagram", "facebook"
             ]
 

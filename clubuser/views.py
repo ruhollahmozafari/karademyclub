@@ -56,9 +56,10 @@ def password_reset_request(request):
 
 @method_decorator(login_required, name = 'dispatch')
 class PassChangeView(SuccessMessageMixin, PasswordChangeView):
+
     form_class = PasswordChangeForm
     template_name = 'registration/change-pass.html'
-    success_message = ( f'your pass have chnaged dear user !')
+    success_message = ( f'your pass have changed dear user !')
     success_url= '/questions'
 
 
@@ -132,7 +133,6 @@ def edit_profile(request,*args, **kwargs):
     else:
         u_form = UserUpdateForm(instance=request.user)
         c_form = ClubUserUpdateForm(instance=request.user.clubuser)
-        messages.success(request, "Your account has been created, welcome ")
     context = {'u_form': u_form,'c_form': c_form}
     return render(request, 'clubuser/update-profile.html', context)
 
@@ -160,6 +160,8 @@ class NotificationView(ListView):
     context_object_name = 'notifs'
     def get_queryset(self):
         notifs =Notification.objects.filter(user__pk = self.kwargs['pk']).order_by('-created_date')
+
+        #to make a new notif into read one
         for notif in notifs:
             if notif.view < 2 :
                 notif.view += 1

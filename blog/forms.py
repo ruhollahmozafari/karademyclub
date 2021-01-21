@@ -34,6 +34,7 @@ class UpdateQuestionForm(forms.ModelForm):
         }
 
 class AnswerForm(forms.ModelForm):
+    
     class Meta:
         model = Answer
         fields = ("body",)
@@ -52,7 +53,7 @@ class ReportForm(forms.ModelForm):
         }
 
 class QuestionCommentForm(forms.ModelForm):
-    # body = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Add a comment...'}))
+
     class Meta:
         model = QuestionComment
         fields = ("body",)
