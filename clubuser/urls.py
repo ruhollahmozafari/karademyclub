@@ -15,7 +15,6 @@ urlpatterns = [
     path('login/', login, name= 'login'),
     path('logout/',logout , name = 'logout'),
     path('update-profile/<int:pk>/', edit_profile, name = 'update-profile'),
-    # path('profile/change-pass/', PasswordChangeView.as_view(template_name = 'registration/change-pass.html'), name= 'change-pass')
     path('profile/change-pass/', PassChangeView.as_view(), name= 'change-pass'),
     path('profile/pass-changed/',TemplateView.as_view(template_name = 'clubuser/pass-changed.html'), name = 'pass-changed' ),
     path('my-questions/<int:pk>/', MyQuestion.as_view(), name= 'my-questions'),

@@ -7,7 +7,9 @@ from blog.models import Category, Report
 from blog.forms import *
 
 
-class SignUpForm(UserCreationForm):# treid it by inheriting from UserCreationForm and see what will happen use this link : https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
+class SignUpForm(UserCreationForm):# tried it by inheriting from UserCreationForm and see what will happen use this link
+    # : https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
+    
     interest = forms.ModelChoiceField(queryset= Category.objects.all())
     image = forms.ImageField( required= False)
 

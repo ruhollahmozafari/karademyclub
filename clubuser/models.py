@@ -33,6 +33,7 @@ class ClubUser(models.Model):
             ('can_modify', 'Can Modify'),
         )
 
+    #lower the size of profile
     def save(self,*args, **kwargs):
         super().save()
         if self.profile_image:

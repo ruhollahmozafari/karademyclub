@@ -135,7 +135,6 @@ def LikeCreate(request, *args, **kwargs):
     return HttpResponseRedirect(reverse('blog:question-detail',args = [id_to_question , slug_to_question]))
 
 
-
 def MakeValidAnswer(request,*args, **kwargs):
 
     answer =get_object_or_404(Answer, id = kwargs['pk'])
@@ -562,11 +561,13 @@ class DeleteReport(DeleteView):
 
 
 class ContactUs(SuccessMessageMixin,CreateView):
-    
+
     model = ContactUs
     fields = ['name', 'email', 'body']
     success_message = 'thank you for sending us message, you comments and opinions are important to us'
     success_url = reverse_lazy('blog:home')
+
+
 
 
 
