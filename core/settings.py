@@ -69,7 +69,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'ruhytest@gmail.com'
-EMAIL_HOST_PASSWORD = 'contemplate'
+EMAIL_HOST_PASSWORD =  'put your own gmail or password as you wish'
 
 TEMPLATES = [
     {
