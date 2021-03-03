@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # 'django.contrib.postgres'
     'crispy_forms',
     'hitcount',
+    'rest_framework',
 
 
 ]

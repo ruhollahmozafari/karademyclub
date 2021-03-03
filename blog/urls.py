@@ -1,5 +1,4 @@
-from django.urls import path
-from django.urls import reverse
+from django.urls import path , reverse, include 
 from .models import *
 from blog.views import *
 from django.views.generic.dates import ArchiveIndexView
@@ -7,8 +6,14 @@ from django.views.generic import TemplateView
 from . import api_views
 app_name='blog'  
 from django.core.paginator import Paginator
+from rest_framework import routers
+router = routers.DefaultRouter()
+router.register ('category', CategoryViewAPI)
+router.register ('tag', TagViewAPI)
 
 urlpatterns = [
+    path('api/',include(router.urls)),
+
     path('',HomeView.as_view(), name = 'home'),
     path('questions/', QuestionsList.as_view(), name= 'questions'),
     path('questions/<int:pk>/<str:slug>/',QuestionDetail.as_view(), name= 'question-detail'),
@@ -19,7 +24,7 @@ urlpatterns = [
     path('ask/',QuestionCreate.as_view(), name = 'ask'),
     path('update-question/<int:pk>/', update_question,name = 'update-question'),
     path('delete-question/<int:pk>/', QuestionDelete.as_view(), name = 'delete-question'),
-    path('api/categories/',api_views.category_list),
+    # path('api/categories/',api_views.category_list),
     path('create-like/<str:app>/<str:model>/<int:pk>/', LikeCreate, name = 'create-like'),
     path('answer/<int:pk>/', WriteAnswer.as_view(), name = 'write-answer'),
     path('delete-answer/<int:pk>', DeleteAnswer.as_view(), name = 'delete-answer'),

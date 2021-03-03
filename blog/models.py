@@ -82,6 +82,7 @@ class Tag(models.Model):
 
 class Question(models.Model):
 
+
     title = models.TextField(max_length= 255 )
     slug = models.SlugField(blank= True , null=True, default='', max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -155,7 +156,7 @@ class Answer(models.Model):
     def get_absolute_url(self):
         return reverse("blog:question-detail",args=[self.question_id.pk , str(self.question_id.slug)])
 
-   
+
 class QuestionComment(models.Model):
 
     user = models.ForeignKey(User,on_delete=models.CASCADE)

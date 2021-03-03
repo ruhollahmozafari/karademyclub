@@ -23,6 +23,17 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Min, Max, Avg, Q
+from rest_framework import viewsets
+from .serializers import * 
+
+class CategoryViewAPI(viewsets.ModelViewSet):
+    queryset =Category.objects.all()
+    serializer_class= CategorySerializer
+
+class TagViewAPI(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    
 
 
 class QuestionsList(ListView):
